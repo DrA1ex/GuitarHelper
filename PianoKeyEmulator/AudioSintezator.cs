@@ -53,6 +53,19 @@ namespace PianoKeyEmulator
         public Tones tone;
         public int id;
 
+        public static Note FromString( string str )
+        {
+            byte octave = byte.Parse( str.Last().ToString() );
+            Tones tone = str.Substring( 0, str.Length - 1 ).Replace('#','d').ConvertToEnum<Tones>();
+
+            return new Note( octave, tone );
+        }
+
+        public bool isDiez()
+        {
+            return tone.ToString().Contains( 'd' );
+        }
+
         #region Operators Defenition
 
         public static int operator -( Note note1, Note note2 )
@@ -106,7 +119,7 @@ namespace PianoKeyEmulator
 
         public override string ToString()
         {
-            return tone.ToString() + octave;
+            return tone.ToString().Replace('d','#') + octave;
         }
         #endregion
     }

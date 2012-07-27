@@ -132,16 +132,18 @@ namespace PianoKeyEmulator
             TextBlock currentKey;
             int keyPosition = keysOffset;
 
-            for( int octave = startOctave; octave <= endOctave; ++octave )
+            for( byte octave = startOctave; octave <= endOctave; ++octave )
             {
                 for( var i = 0; i < 12; ++i ) // 12 полутонов в октаве
                 {
                     currentKey = new TextBlock();
 
-                    currentKey.Text = Enum.GetName( typeof( Tones ), i ) + octave.ToString();
-                    currentKey.Name = currentKey.Text;
+                    var note = new Note( octave, (Tones)i );
 
-                    if( !currentKey.Text.Contains( "d" ) ) //Если не диез
+                    currentKey.Text = note.ToString();
+                    currentKey.Name = GenerateKeyName( note );
+
+                    if( !note.isDiez() ) //Если не диез
                     {
                         currentKey.Width = keyWidth;
                         currentKey.Height = keyHeight;
@@ -186,7 +188,7 @@ namespace PianoKeyEmulator
                     currentKey.PreviewMouseLeftButtonUp += PianoKeyUp;
                     currentKey.MouseLeave += PianoKeyLeave;
 
-                    currentKey.PreviewMouseRightButtonUp += ToggleKey;
+                    currentKey.PreviewMouseRightButtonUp += KeyToggled;
 
                     KeysGrid.Children.Add( currentKey );
                 }
@@ -197,9 +199,9 @@ namespace PianoKeyEmulator
 
             Shape currentFret;
 
-            for( int guitarString = 0; guitarString < 6; ++guitarString )
+            for( byte guitarString = 0; guitarString < 6; ++guitarString )
             {
-                for( int fret = 0; fret < fretsCount; ++fret )
+                for( byte fret = 0; fret < fretsCount; ++fret )
                 {
                     if( fret != 0 )
                     {
@@ -212,15 +214,15 @@ namespace PianoKeyEmulator
                         currentFret.Margin = new Thickness( 0 );
                     }
 
-                    currentFret.Name = "_" + guitarString + "_" + fret;
+                    currentFret.Name = GenerateFretName( guitarString, fret );
 
                     currentFret.Stroke = fretStroke;
                     currentFret.Fill = inactiveFret;
 
                     FretsGrid.Children.Add( currentFret );
 
-                    currentFret.SetValue( Grid.ColumnProperty, fret );
-                    currentFret.SetValue( Grid.RowProperty, guitarString );
+                    currentFret.SetValue( Grid.ColumnProperty, (int)fret );
+                    currentFret.SetValue( Grid.RowProperty, (int)guitarString );
 
 
 
@@ -228,7 +230,7 @@ namespace PianoKeyEmulator
                     currentFret.PreviewMouseLeftButtonUp += FretMouseUp;
                     currentFret.MouseLeave += FretMouseLeave;
 
-                    currentFret.PreviewMouseRightButtonUp += FretToggle;
+                    currentFret.PreviewMouseRightButtonUp += FretToggled;
                 }
             }
             #endregion
@@ -250,102 +252,6 @@ namespace PianoKeyEmulator
         {
             StopPlayAll();
             sintezator.Dispose();
-        }
-
-        private Color getColor()
-        {
-            for( int i = 0; i < selectionColors.Length; ++i )
-            {
-                if( selectionColors[i].free == true )
-                {
-                    if( i != selectionColors.Length - 1 )
-                    {
-                        selectionColors[i].free = false;
-                    }
-                    return selectionColors[i].color;
-                }
-            }
-
-            return selectionColors.Last().color;
-        }
-
-        private void FreeColor( Color color )
-        {
-            for( int i = 0; i < selectionColors.Length; ++i )
-            {
-                if( selectionColors[i].color == color )
-                {
-                    selectionColors[i].free = true;
-                }
-            }
-        }
-
-        private void HighlightNote( Note note, Shape major = null ) // major - объект лада, который необходимо подсветить как основной
-        {
-            Color newColor = getColor();
-            SolidColorBrush baseColor = new SolidColorBrush( newColor );
-            Color tmp = newColor;
-            tmp.A = inactiveFretAlpha;
-            SolidColorBrush highlighted = new SolidColorBrush( tmp );
-
-            var lst = guitar.GetFretsForNote( note );
-            foreach( var objName in lst )
-            {
-                object o = LogicalTreeHelper.FindLogicalNode( FretsGrid,
-                    "_" + objName.Key + "_" + objName.Value ); // Гитарный лад имеет след. имя: "_струна_лад"
-                if( o != null )
-                {
-                    ((Shape)o).Fill = highlighted;
-                }
-            }
-
-            if( major != null )
-            {
-                major.Fill = baseColor;
-            }
-
-            string str = note.ToString();
-            tChordName.Text = str;
-
-            var bNote = (TextBlock)LogicalTreeHelper.FindLogicalNode( KeysGrid, str ); // имя клавиши имеет след. вид: "Тон[d]Октава"
-            if( bNote != null )
-            {
-                bNote.Background = baseColor;
-                bNote.Focus();
-            }
-        }
-
-        private void DehightlightNote( Note note )
-        {
-            var lst = guitar.GetFretsForNote( note );
-            foreach( var objName in lst )
-            {
-                object o = LogicalTreeHelper.FindLogicalNode( FretsGrid,
-                    "_" + objName.Key + "_" + objName.Value );
-                if( o != null )
-                {
-                    ((Shape)o).Fill = inactiveFret;
-                }
-            }
-
-            tChordName.Text = "";
-
-            string str = note.ToString();
-
-            var bNote = (TextBlock)LogicalTreeHelper.FindLogicalNode( KeysGrid, str );
-            if( bNote != null )
-            {
-                FreeColor( ((SolidColorBrush)bNote.Background).Color );
-
-                if( str.Length == 2 ) // Если длинна 2, то это нота без диеза
-                {
-                    bNote.Background = genericColor;
-                }
-                else
-                {
-                    bNote.Background = diezColor;
-                }
-            }
         }
 
         bool pianoKeyWasDown = false;
@@ -446,30 +352,7 @@ namespace PianoKeyEmulator
             }
         }
 
-        public void PlayToggled()
-        {
-            sintezator.StopAll();
-
-            foreach( var i in toggled )
-            {
-                sintezator.PlayTone( i.octave, i.tone );
-            }
-        }
-
-        public void StopPlayAll()
-        {
-            sintezator.StopAll();
-            foreach( var i in toggled )
-            {
-                DehightlightNote( i );
-            }
-
-            toggled.Clear();
-
-            UpdateChord();
-        }
-
-        private void FretToggle( object sender, MouseButtonEventArgs e )
+        private void FretToggled( object sender, MouseButtonEventArgs e )
         {
             var obj = (Shape)sender;
 
@@ -478,28 +361,11 @@ namespace PianoKeyEmulator
             ToggleNote( note, obj );
         }
 
-        private void ToggleKey( object sender, MouseButtonEventArgs e )
+        private void KeyToggled( object sender, MouseButtonEventArgs e )
         {
             var obj = (TextBlock)sender;
 
             ToggleNote( ParseKeyName( obj.Name ) );
-        }
-
-        internal void ToggleNote( Note note, Shape major = null )
-        {
-            if( toggled.Contains( note ) )
-            {
-                DehightlightNote( note );
-                toggled.Remove( note );
-            }
-            else
-            {
-                HighlightNote( note, major );
-                toggled.Add( note );
-            }
-
-            toggled = toggled.OrderBy( x => x.id ).ToList();
-            UpdateChord();
         }
 
         private void ChordChanged( object sender, SelectionChangedEventArgs e )
@@ -544,20 +410,161 @@ namespace PianoKeyEmulator
         }
 
         #region Функциональная часть
+        internal void ToggleNote( Note note, Shape major = null )
+        {
+            if( toggled.Contains( note ) )
+            {
+                DehightlightNote( note );
+                toggled.Remove( note );
+            }
+            else
+            {
+                HighlightNote( note, major );
+                toggled.Add( note );
+            }
+
+            toggled = toggled.OrderBy( x => x.id ).ToList();
+            UpdateChord();
+        }
+
+        public void PlayToggled()
+        {
+            sintezator.StopAll();
+
+            foreach( var i in toggled )
+            {
+                sintezator.PlayTone( i.octave, i.tone );
+            }
+        }
+
+        public void StopPlayAll()
+        {
+            sintezator.StopAll();
+            foreach( var i in toggled )
+            {
+                DehightlightNote( i );
+            }
+
+            toggled.Clear();
+
+            UpdateChord();
+        }
+
+        private Color getColor()
+        {
+            for( int i = 0; i < selectionColors.Length; ++i )
+            {
+                if( selectionColors[i].free == true )
+                {
+                    if( i != selectionColors.Length - 1 )
+                    {
+                        selectionColors[i].free = false;
+                    }
+                    return selectionColors[i].color;
+                }
+            }
+
+            return selectionColors.Last().color;
+        }
+
+        private void FreeColor( Color color )
+        {
+            for( int i = 0; i < selectionColors.Length; ++i )
+            {
+                if( selectionColors[i].color == color )
+                {
+                    selectionColors[i].free = true;
+                }
+            }
+        }
+
+        private void HighlightNote( Note note, Shape major = null ) // major - объект лада, который необходимо подсветить как основной
+        {
+            Color newColor = getColor();
+            SolidColorBrush baseColor = new SolidColorBrush( newColor );
+            Color tmp = newColor;
+            tmp.A = inactiveFretAlpha;
+            SolidColorBrush highlighted = new SolidColorBrush( tmp );
+
+            var lst = guitar.GetFretsForNote( note );
+            foreach( var objName in lst )
+            {
+                object o = LogicalTreeHelper.FindLogicalNode( FretsGrid,
+                    GenerateFretName(objName.Item1, objName.Item2) );
+                if( o != null )
+                {
+                    ((Shape)o).Fill = highlighted;
+                }
+            }
+
+            if( major != null )
+            {
+                major.Fill = baseColor;
+            }
+
+            string str = GenerateKeyName( note );
+            tChordName.Text = note.ToString();
+
+            var bNote = (TextBlock)LogicalTreeHelper.FindLogicalNode( KeysGrid, str ); // имя клавиши имеет след. вид: "Тон[d]Октава"
+            if( bNote != null )
+            {
+                bNote.Background = baseColor;
+                bNote.Focus();
+            }
+        }
+
+        private void DehightlightNote( Note note )
+        {
+            var lst = guitar.GetFretsForNote( note );
+            foreach( var objName in lst )
+            {
+                object o = LogicalTreeHelper.FindLogicalNode( FretsGrid,
+                    GenerateFretName( objName.Item1, objName.Item2 ) );
+                if( o != null )
+                {
+                    ((Shape)o).Fill = inactiveFret;
+                }
+            }
+
+            tChordName.Text = "";
+
+            string str = GenerateKeyName( note );
+
+            var bNote = (TextBlock)LogicalTreeHelper.FindLogicalNode( KeysGrid, str );
+            if( bNote != null )
+            {
+                FreeColor( ((SolidColorBrush)bNote.Background).Color );
+
+                if( str.Length == 2 ) // Если длинна 2, то это нота без диеза
+                {
+                    bNote.Background = genericColor;
+                }
+                else
+                {
+                    bNote.Background = diezColor;
+                }
+            }
+        }
+
         internal static Note ParseKeyName( string data )
         {
-            string tone = data.Substring( 0, data.Length - 1 );
-            byte octave = byte.Parse( data.Substring( data.Length - 1 ) );
-
-            var note = new Note( octave, tone.ConvertToEnum<Tones>() );
-            return note;
+            return Note.FromString( data.Replace('#','d') );
         }
+        private string GenerateKeyName( Note note )
+        {
+            return note.ToString().Replace( '#', 'd' );
+        }
+
         internal Note ParseFretName( string str )
         {
             var data = str.Split( new char[] { '_' }, StringSplitOptions.RemoveEmptyEntries ); // лад имеет след. имя: _Струна_НомерЛада
 
             var note = guitar.GetNote( byte.Parse( data[0] ), byte.Parse( data[1] ) );
             return note;
+        }
+        private string GenerateFretName( byte stringNumber, byte fret )
+        {
+            return "_" + stringNumber + "_" + fret;
         }
 
         internal void SetCurrentLine( int line )
@@ -589,7 +596,7 @@ namespace PianoKeyEmulator
 
                     tChordName.Text = string.Format( format,
                         type.description,
-                        baseNote.tone,
+                        baseNote.tone.ToString().Replace('d','#'),
                         type.name );
                 }
                 catch( Exception e )

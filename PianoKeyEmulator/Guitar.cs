@@ -16,9 +16,9 @@ namespace PianoKeyEmulator
             }
         }
 
-        public List<KeyValuePair<int, int>> GetFretsForNote( Note note )
+        public List<Tuple<byte, byte>> GetFretsForNote( Note note )
         {
-            List<KeyValuePair<int, int>> result = new List<KeyValuePair<int, int>>(); // 1-е значение номер стпуны (от 1 до 6), 2-е - номер лада ( 0 - открытая струна)
+            List<Tuple<byte, byte>> result = new List<Tuple<byte, byte>>(); // 1-е значение номер стпуны (от 1 до 6), 2-е - номер лада ( 0 - открытая струна)
 
             byte currentString = 0;
             foreach( var str in strs )
@@ -27,7 +27,7 @@ namespace PianoKeyEmulator
 
                 if( fret != -1 ) // Если на этой струне можно сыграть заданную ноту
                 {
-                    result.Add( new KeyValuePair<int, int>( currentString, fret ) );
+                    result.Add( new Tuple<byte, byte>( currentString, (byte)fret ) );
                 }
 
                 ++currentString;

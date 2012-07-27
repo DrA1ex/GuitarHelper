@@ -69,7 +69,7 @@ namespace PianoKeyEmulator
             while( cmds != null && currentLine >= 0 && currentLine < cmds.Length )
             {
                 int sleepTime = (int)((int)parent.Dispatcher.Invoke(
-                    new RunCmdDelegate( RunCmd ), new object[] { cmds[currentLine] } 
+                    new RunCmdDelegate( RunCmd ), new object[] { cmds[currentLine] }
                     ) / playSpeed);
                 Thread.Sleep( sleepTime );
                 parent.Dispatcher.Invoke( (SetCurrentLineDelegate)parent.SetCurrentLine, new object[] { ++currentLine } );
@@ -94,21 +94,18 @@ namespace PianoKeyEmulator
                         {
                             try
                             {
-                                byte octave = 3;
-                                Tones tone;
+                                Note baseNote;
 
-                                // 0-й элемент содержит базовую ноту аккорда (Например Dd4 - D# 4-й октавы)
-                                if( lst[0].Length == 3 ) // Если октава указана
+                                // 0-й элемент содержит базовую ноту аккорда (Например D#4 - D# 4-й октавы)
+                                try
                                 {
-                                    octave = byte.Parse( lst[0].Last().ToString() ); // Октавой является последний символ в строке
-                                    tone = lst[0].Substring( 0, lst[0].Length - 1 ).ConvertToEnum<Tones>(); // Тоном являются строка без последнего символа
+                                    baseNote = Note.FromString( lst[0] );
                                 }
-                                else
+                                catch
                                 {
-                                    tone = lst[0].ConvertToEnum<Tones>(); // Октава не указана. Содержимое тональность
+                                    baseNote = new Note( 3, lst[0].Replace( "#", "d" ).ConvertToEnum<Tones>() ); //Возможно не указана октава
                                 }
 
-                                Note baseNote = new Note( octave, tone );
 
                                 string chordName = "";
                                 if( lst.Length >= 2 ) // Если через пробел еще что-то было, значит аккорд не мажорный (у мажорного нет никаких суфиксов)
@@ -132,7 +129,7 @@ namespace PianoKeyEmulator
                                     foreach( var chordNote in chord )
                                     {
                                         parent.Dispatcher.Invoke( (ToggleNoteDelegate)parent.ToggleNote,
-                                            new object[] { chordNote } );
+                                            new object[] { chordNote, null } );
                                     }
                                     parent.Dispatcher.Invoke( (Action)parent.PlayToggled, null );
                                 }
@@ -151,7 +148,7 @@ namespace PianoKeyEmulator
                             {
                                 try
                                 {
-                                    Note tmp = MainWindow.ParseKeyName( note );
+                                    Note tmp = Note.FromString( note );
                                     parent.Dispatcher.Invoke( (ToggleNoteDelegate)parent.ToggleNote,
                                             new object[] { tmp, null } );
                                 }
