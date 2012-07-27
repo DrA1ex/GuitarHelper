@@ -1,0 +1,658 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Timers;
+using System.Windows.Threading;
+using System.Diagnostics;
+using System.Collections;
+
+namespace PianoKeyEmulator
+{
+    /// <summary>
+    /// Логика взаимодействия для MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        AudioSintezator sintezator = new AudioSintezator();
+        Guitar guitar = new Guitar(
+            new Note( 4, Tones.E ),
+            new Note( 3, Tones.B ),
+            new Note( 3, Tones.G ),
+            new Note( 3, Tones.D ),
+            new Note( 2, Tones.A ),
+            new Note( 2, Tones.E )
+            );
+
+        Player player = null;
+
+        Tuple<string, Note[]>[] Tunes = new Tuple<string, Note[]>[6]
+        {
+            new Tuple<string, Note[]>("Стандарт: EADGBE", new Note[] { new Note(4, Tones.E), new Note(3, Tones.B), new Note(3, Tones.G),
+                new Note(3, Tones.D), new Note(2, Tones.A),new Note(2, Tones.E)}),
+            new Tuple<string, Note[]>("Drop D: DADGBE", new Note[] { new Note(4, Tones.E), new Note(3, Tones.B), new Note(3, Tones.G),
+                new Note(3, Tones.D), new Note(2, Tones.A),new Note(2, Tones.D)}),
+            new Tuple<string, Note[]>("Double Drop D: DADGBD", new Note[] { new Note(4, Tones.D), new Note(3, Tones.B), new Note(3, Tones.G),
+                new Note(3, Tones.D), new Note(2, Tones.A),new Note(2, Tones.D)}),
+            new Tuple<string, Note[]>("Drop C: CGCFAD", new Note[] { new Note(4, Tones.D), new Note(3, Tones.A), new Note(3, Tones.F),
+                new Note(3, Tones.C), new Note(2, Tones.G),new Note(2, Tones.C)}),
+            new Tuple<string, Note[]>("Open G: DGDGBD", new Note[] { new Note(4, Tones.D), new Note(3, Tones.B), new Note(3, Tones.G),
+                new Note(3, Tones.D), new Note(2, Tones.G),new Note(2, Tones.D)}),
+            new Tuple<string, Note[]>("1/2 step Down: EbG#DbF#BbEb", new Note[] { new Note(4, Tones.Dd), new Note(3, Tones.Ad), new Note(3, Tones.Fd),
+                new Note(3, Tones.Cd), new Note(2, Tones.Gd),new Note(2, Tones.Dd)})
+            
+        };
+
+
+
+        SolidColorBrush diezColor = new SolidColorBrush( Color.FromRgb( 45, 45, 48 ) );
+        SolidColorBrush genericColor = new SolidColorBrush( Color.FromRgb( 207, 207, 207 ) );
+
+        SolidColorBrush inactiveFret = new SolidColorBrush( Color.FromArgb( 0, 0, 0, 0 ) );
+        SolidColorBrush fretStroke = new SolidColorBrush( Color.FromArgb( 120, 0, 74, 225 ) );
+
+        const byte inactiveFretAlpha = 120;
+
+        ColorItem[] selectionColors = new ColorItem[]
+        {
+            new ColorItem(true, Color.FromRgb(0,138,255)),
+            new ColorItem(true, Color.FromRgb(255,0,10)),
+            new ColorItem(true, Color.FromRgb(255,231,0)),
+            new ColorItem(true, Color.FromRgb(78,255,0)),
+            new ColorItem(true, Color.FromRgb(186,0,255)),
+            new ColorItem(true, Color.FromRgb(255,177,0)),
+            new ColorItem(true, Color.FromRgb(154,100,134)) //Этот цвет используется если предыдущие заняты
+        };
+
+        const int fretOffset = 5;
+
+        const int keysOffset = 2;
+        const int keyHeight = 180;
+        const int keyWidth = 60;
+        const int diezHeight = 120;
+        const int diezWiddth = 40;
+
+        const int startOctave = 2;
+        const int endOctave = 7;
+
+        const int fretsCount = 26;
+
+        const string format = "{0} - {1}{2}"; // <Описание> - <Нота><Модификация>
+
+        List<Note> toggled = new List<Note>();
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            player = new Player( this );
+
+            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+
+            var names = Enum.GetNames( typeof( AudioSintezator.Instruments ) );
+
+            foreach( var intsr in names )
+            {
+                cInstrument.Items.Add( intsr );
+            }
+
+            foreach( var tune in Tunes )
+            {
+                cTunes.Items.Add( tune.Item1 );
+            }
+
+            foreach( var mod in Chords.chordMods )
+            {
+                cChordMods.Items.Add( mod );
+            }
+
+            foreach( var chord in Chords.chordsBases )
+            {
+                cChords.Items.Add( chord );
+            }
+
+            for( double speed = 0.25; speed <= 2.0; speed += 0.25 )
+            {
+                cPlaySpeed.Items.Add( speed );
+            }
+
+
+            #region Генерация клавиш пианино
+            TextBlock currentKey;
+            int keyPosition = keysOffset;
+
+            for( int octave = startOctave; octave <= endOctave; ++octave )
+            {
+                for( var i = 0; i < 12; ++i ) // 12 полутонов в октаве
+                {
+                    currentKey = new TextBlock();
+
+                    currentKey.Text = Enum.GetName( typeof( Tones ), i ) + octave.ToString();
+                    currentKey.Name = currentKey.Text;
+
+                    if( !currentKey.Text.Contains( "d" ) ) //Если не диез
+                    {
+                        currentKey.Width = keyWidth;
+                        currentKey.Height = keyHeight;
+
+                        currentKey.Background = genericColor;
+
+                        currentKey.Margin = new Thickness( keyPosition, 0, 0, 0 );
+                        currentKey.Padding = new Thickness( 0, 150, 0, 0 );
+
+                        currentKey.SetValue( Grid.ZIndexProperty, 0 );
+
+                        keyPosition += keyWidth + keysOffset;
+
+                        currentKey.Foreground = Brushes.Black;
+                    }
+                    else
+                    {
+                        currentKey.Width = diezWiddth;
+                        currentKey.Height = diezHeight;
+
+                        currentKey.Background = diezColor;
+
+                        currentKey.Margin = new Thickness( keyPosition - diezWiddth / 2 + keysOffset / 2,
+                            0, 0, 0 );
+                        currentKey.Padding = new Thickness( 0, 90, 0, 0 );
+
+                        currentKey.SetValue( Grid.ZIndexProperty, 1 );
+
+                        currentKey.Foreground = Brushes.White;
+                    }
+
+                    currentKey.TextAlignment = TextAlignment.Center;
+                    currentKey.FontSize = 18;
+                    currentKey.FontWeight = FontWeights.Bold;
+                    currentKey.Focusable = true;
+
+
+                    currentKey.HorizontalAlignment = HorizontalAlignment.Left;
+                    currentKey.VerticalAlignment = VerticalAlignment.Top;
+
+                    currentKey.PreviewMouseLeftButtonDown += PianoKeyDown;
+                    currentKey.PreviewMouseLeftButtonUp += PianoKeyUp;
+                    currentKey.MouseLeave += PianoKeyLeave;
+
+                    currentKey.PreviewMouseRightButtonUp += ToggleKey;
+
+                    KeysGrid.Children.Add( currentKey );
+                }
+            }
+            #endregion
+
+            #region Генерация ладов для гитары
+
+            Shape currentFret;
+
+            for( int guitarString = 0; guitarString < 6; ++guitarString )
+            {
+                for( int fret = 0; fret < fretsCount; ++fret )
+                {
+                    if( fret != 0 )
+                    {
+                        currentFret = new Ellipse();
+                        currentFret.Margin = new Thickness( fretOffset );
+                    }
+                    else
+                    {
+                        currentFret = new Rectangle();
+                        currentFret.Margin = new Thickness( 0 );
+                    }
+
+                    currentFret.Name = "_" + guitarString + "_" + fret;
+
+                    currentFret.Stroke = fretStroke;
+                    currentFret.Fill = inactiveFret;
+
+                    FretsGrid.Children.Add( currentFret );
+
+                    currentFret.SetValue( Grid.ColumnProperty, fret );
+                    currentFret.SetValue( Grid.RowProperty, guitarString );
+
+
+
+                    currentFret.PreviewMouseLeftButtonDown += FretMouseDown;
+                    currentFret.PreviewMouseLeftButtonUp += FretMouseUp;
+                    currentFret.MouseLeave += FretMouseLeave;
+
+                    currentFret.PreviewMouseRightButtonUp += FretToggle;
+                }
+            }
+            #endregion
+        }
+
+        private void Window_Loaded( object sender, RoutedEventArgs e )
+        {
+            cInstrument.SelectedItem = "AcousticPiano";
+            cTunes.SelectedIndex = 0;
+            cChordMods.Items[0] = "maj";
+            cChordMods.SelectedIndex = -1;
+            cChords.SelectedIndex = 0;
+            cPlaySpeed.SelectedItem = 1.0;
+
+            StopPlayAll();
+        }
+
+        private void Window_Closed( object sender, EventArgs e )
+        {
+            StopPlayAll();
+            sintezator.Dispose();
+        }
+
+        private Color getColor()
+        {
+            for( int i = 0; i < selectionColors.Length; ++i )
+            {
+                if( selectionColors[i].free == true )
+                {
+                    if( i != selectionColors.Length - 1 )
+                    {
+                        selectionColors[i].free = false;
+                    }
+                    return selectionColors[i].color;
+                }
+            }
+
+            return selectionColors.Last().color;
+        }
+
+        private void FreeColor( Color color )
+        {
+            for( int i = 0; i < selectionColors.Length; ++i )
+            {
+                if( selectionColors[i].color == color )
+                {
+                    selectionColors[i].free = true;
+                }
+            }
+        }
+
+        private void HighlightNote( Note note, Shape major = null ) // major - объект лада, который необходимо подсветить как основной
+        {
+            Color newColor = getColor();
+            SolidColorBrush baseColor = new SolidColorBrush( newColor );
+            Color tmp = newColor;
+            tmp.A = inactiveFretAlpha;
+            SolidColorBrush highlighted = new SolidColorBrush( tmp );
+
+            var lst = guitar.GetFretsForNote( note );
+            foreach( var objName in lst )
+            {
+                object o = LogicalTreeHelper.FindLogicalNode( FretsGrid,
+                    "_" + objName.Key + "_" + objName.Value ); // Гитарный лад имеет след. имя: "_струна_лад"
+                if( o != null )
+                {
+                    ((Shape)o).Fill = highlighted;
+                }
+            }
+
+            if( major != null )
+            {
+                major.Fill = baseColor;
+            }
+
+            string str = note.ToString();
+            tChordName.Text = str;
+
+            var bNote = (TextBlock)LogicalTreeHelper.FindLogicalNode( KeysGrid, str ); // имя клавиши имеет след. вид: "Тон[d]Октава"
+            if( bNote != null )
+            {
+                bNote.Background = baseColor;
+                bNote.Focus();
+            }
+        }
+
+        private void DehightlightNote( Note note )
+        {
+            var lst = guitar.GetFretsForNote( note );
+            foreach( var objName in lst )
+            {
+                object o = LogicalTreeHelper.FindLogicalNode( FretsGrid,
+                    "_" + objName.Key + "_" + objName.Value );
+                if( o != null )
+                {
+                    ((Shape)o).Fill = inactiveFret;
+                }
+            }
+
+            tChordName.Text = "";
+
+            string str = note.ToString();
+
+            var bNote = (TextBlock)LogicalTreeHelper.FindLogicalNode( KeysGrid, str );
+            if( bNote != null )
+            {
+                FreeColor( ((SolidColorBrush)bNote.Background).Color );
+
+                if( str.Length == 2 ) // Если длинна 2, то это нота без диеза
+                {
+                    bNote.Background = genericColor;
+                }
+                else
+                {
+                    bNote.Background = diezColor;
+                }
+            }
+        }
+
+        bool pianoKeyWasDown = false;
+        private void PianoKeyDown( object sender, MouseButtonEventArgs e )
+        {
+            pianoKeyWasDown = true;
+
+            var obj = (TextBlock)sender;
+            var note = ParseKeyName( obj.Name );
+
+            sintezator.PlayTone( note.octave, note.tone );
+
+            if( !toggled.Contains( note ) )
+                HighlightNote( note );
+        }
+
+        private void PianoKeyUp( object sender, MouseButtonEventArgs e )
+        {
+            pianoKeyWasDown = false;
+
+            var obj = (TextBlock)sender;
+            var note = ParseKeyName( obj.Name );
+
+            sintezator.StopPlaying( note.octave, note.tone );
+
+            if( !toggled.Contains( note ) )
+                DehightlightNote( note );
+        }
+
+        private void PianoKeyLeave( object sender, MouseEventArgs e )
+        {
+            if( pianoKeyWasDown )
+                PianoKeyUp( sender, null );
+        }
+
+        private void cInstrument_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+            sintezator.StopAll();
+            sintezator.SetInstrument( ((string)((ComboBox)sender).SelectedValue).ConvertToEnum<AudioSintezator.Instruments>() );
+        }
+
+        bool FretWasDown = false;
+        private void FretMouseDown( object sender, MouseButtonEventArgs e )
+        {
+            FretWasDown = true;
+
+            var obj = (Shape)sender;
+            var note = ParseFretName( obj.Name );
+            sintezator.PlayTone( note.octave, note.tone );
+
+            if( !toggled.Contains( note ) )
+            {
+                HighlightNote( note, obj );
+            }
+        }
+
+        private void FretMouseUp( object sender, MouseButtonEventArgs e )
+        {
+            FretWasDown = false;
+
+            var obj = (Shape)sender;
+            var note = ParseFretName( obj.Name );
+
+            sintezator.StopPlaying( note.id );
+
+            if( !toggled.Contains( note ) )
+            {
+                DehightlightNote( note );
+            }
+        }
+
+        private void FretMouseLeave( object sender, MouseEventArgs e )
+        {
+            if( FretWasDown )
+                FretMouseUp( sender, null );
+        }
+
+        private void cTunes_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+            StopPlayAll();
+            guitar.SetTuning( Tunes[cTunes.SelectedIndex].Item2 );
+        }
+
+        private void WindowKeyDown( object sender, KeyEventArgs e )
+        {
+
+        }
+
+        private void WindowKeyUp( object sender, KeyEventArgs e )
+        {
+            if( e.Key == Key.Escape )
+            {
+                StopPlayAll();
+            }
+            else if( e.Key == Key.F1 )
+            {
+                AddToggledToSong();
+            }
+        }
+
+        public void PlayToggled()
+        {
+            sintezator.StopAll();
+
+            foreach( var i in toggled )
+            {
+                sintezator.PlayTone( i.octave, i.tone );
+            }
+        }
+
+        public void StopPlayAll()
+        {
+            sintezator.StopAll();
+            foreach( var i in toggled )
+            {
+                DehightlightNote( i );
+            }
+
+            toggled.Clear();
+
+            UpdateChord();
+        }
+
+        private void FretToggle( object sender, MouseButtonEventArgs e )
+        {
+            var obj = (Shape)sender;
+
+            Note note = ParseFretName( obj.Name );
+
+            ToggleNote( note, obj );
+        }
+
+        private void ToggleKey( object sender, MouseButtonEventArgs e )
+        {
+            var obj = (TextBlock)sender;
+
+            ToggleNote( ParseKeyName( obj.Name ) );
+        }
+
+        internal void ToggleNote( Note note, Shape major = null )
+        {
+            if( toggled.Contains( note ) )
+            {
+                DehightlightNote( note );
+                toggled.Remove( note );
+            }
+            else
+            {
+                HighlightNote( note, major );
+                toggled.Add( note );
+            }
+
+            toggled = toggled.OrderBy( x => x.id ).ToList();
+            UpdateChord();
+        }
+
+        private void ChordChanged( object sender, SelectionChangedEventArgs e )
+        {
+            ToggleSelectedChord();
+        }
+
+        private void bChord_PreviewMouseDown( object sender, MouseButtonEventArgs e )
+        {
+            PlayToggled();
+        }
+
+        private void bChord_PreviewMouseUp( object sender, MouseButtonEventArgs e )
+        {
+            sintezator.StopAll();
+        }
+
+        private void bReset_PreviewMouseUp( object sender, MouseButtonEventArgs e )
+        {
+            cChordMods.SelectedIndex = -1;
+            StopPlayAll();
+        }
+
+        private void bPlay_PreviewMouseLeftButtonUp( object sender, MouseButtonEventArgs e )
+        {
+            var strs = tSong.Text.Split( new string[] { "\r\n", "\n" }, StringSplitOptions.None );
+            tSong.IsReadOnly = true;
+
+            player.SetStartPos( tSong.GetLineIndexFromCharacterIndex( tSong.CaretIndex ) );
+            player.playMusic( strs );
+        }
+
+        private void bStop_PreviewMouseLeftButtonUp( object sender, MouseButtonEventArgs e )
+        {
+            player.Stop();
+            tSong.IsReadOnly = false;
+        }
+
+        private void cPlaySpeed_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+            player.SetPlaySpeed( (double)cPlaySpeed.SelectedItem );
+        }
+
+        #region Функциональная часть
+        internal static Note ParseKeyName( string data )
+        {
+            string tone = data.Substring( 0, data.Length - 1 );
+            byte octave = byte.Parse( data.Substring( data.Length - 1 ) );
+
+            var note = new Note( octave, tone.ConvertToEnum<Tones>() );
+            return note;
+        }
+        internal Note ParseFretName( string str )
+        {
+            var data = str.Split( new char[] { '_' }, StringSplitOptions.RemoveEmptyEntries ); // лад имеет след. имя: _Струна_НомерЛада
+
+            var note = guitar.GetNote( byte.Parse( data[0] ), byte.Parse( data[1] ) );
+            return note;
+        }
+
+        internal void SetCurrentLine( int line )
+        {
+            try
+            {
+                int index = tSong.GetCharacterIndexFromLineIndex( line );
+                tSong.Select( index,
+                    tSong.GetCharacterIndexFromLineIndex( line + 1 ) - index - 1 );
+                tSong.Focus();
+            }
+            catch //Передана несуществующая строка, значи воспроизведение остановлено
+            {
+                tSong.Select( 0, 0 );
+                tSong.IsReadOnly = false;
+            }
+        }
+
+        private void UpdateChord()
+        {
+            if( toggled.Count > 0 )
+            {
+                ChordType type;
+                Note baseNote;
+
+                try
+                {
+                    Chords.GetChord( toggled, out baseNote, out type );
+
+                    tChordName.Text = string.Format( format,
+                        type.description,
+                        baseNote.tone,
+                        type.name );
+                }
+                catch( Exception e )
+                {
+                    tChordName.Text = e.Message;
+                }
+            }
+            else
+            {
+                tChordName.Text = "—";
+            }
+
+        }
+
+        private void AddToggledToSong()
+        {
+            if( toggled.Count > 0 && !tSong.IsReadOnly )
+            {
+                StringBuilder str = new StringBuilder( "\n" );
+                foreach( var note in toggled )
+                {
+                    str.Append( note );
+                    str.Append( "," );
+                }
+                if( str.Length > 0 )
+                {
+                    str.Remove( str.Length - 1, 1 ); // Удаляем последнюю запятую
+                    str.Append( "\n" );
+
+                    tSong.SelectedText = str.ToString();
+                    tSong.SelectionLength = 0;
+
+                    int lineIndex = tSong.GetLineIndexFromCharacterIndex( tSong.CaretIndex );
+                    int index = tSong.GetCharacterIndexFromLineIndex( lineIndex + 2 );
+                    tSong.Select( index, 0 );
+                    tSong.Focus();
+                }
+
+
+            }
+        }
+
+        void ToggleSelectedChord()
+        {
+            if( cChords.SelectedIndex >= 0 && cChordMods.SelectedIndex >= 0 )
+            {
+                StopPlayAll();
+
+                string chord = cChords.SelectedValue as string;
+                int mod = cChordMods.SelectedIndex;
+                chord = chord.Replace( "#", "d" );
+
+                Note baseNote = new Note( 3, chord.ConvertToEnum<Tones>() );
+
+                var lst = Chords.chordTypes[mod].BuildChord( baseNote );
+
+                foreach( var chordNote in lst )
+                {
+                    ToggleNote( chordNote );
+                }
+            }
+        }
+        #endregion
+
+    }
+}

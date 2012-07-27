@@ -1,0 +1,53 @@
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\PianoKeyEmulator.exe.config
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.csprojResolveAssemblyReference.cache
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\MainWindow.baml
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\MainWindow.g.cs
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\App.g.cs
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator_MarkupCompile.cache
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.g.resources
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.Properties.Resources.resources
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.csproj.GenerateResource.Cache
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\PianoKeyEmulator.exe
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\PianoKeyEmulator.pdb
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\NAudio.dll
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\NAudio.xml
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.exe
+C:\Users\A1ex\Documents\Visual Studio 11\Projects\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.pdb
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\PianoKeyEmulator.exe.config
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.exe
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.pdb
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\PianoKeyEmulator.exe
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\PianoKeyEmulator.pdb
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\Microsoft.Expression.Interactions.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\NAudio.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\System.Windows.Interactivity.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\Microsoft.Expression.Interactions.xml
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\NAudio.xml
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\System.Windows.Interactivity.xml
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\de\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\en\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\es\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\fr\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\it\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\ja\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\ko\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\zh-Hans\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\zh-Hant\Microsoft.Expression.Interactions.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\de\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\en\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\es\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\fr\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\it\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\ja\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\ko\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\zh-Hans\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\bin\Debug\zh-Hant\System.Windows.Interactivity.resources.dll
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\MainWindow.g.cs
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\App.g.cs
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator_MarkupCompile.cache
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator_MarkupCompile.lref
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\MainWindow.baml
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.g.resources
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.Properties.Resources.resources
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.csproj.GenerateResource.Cache
+E:\All\My\c++\Projects\CS\PianoKeyEmulator\PianoKeyEmulator\obj\Debug\PianoKeyEmulator.csprojResolveAssemblyReference.cache
