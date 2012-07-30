@@ -56,8 +56,8 @@ namespace PianoKeyEmulator
 
 
 
-        SolidColorBrush diezColor = new SolidColorBrush( Color.FromRgb( 45, 45, 48 ) );
-        SolidColorBrush genericColor = new SolidColorBrush( Color.FromRgb( 207, 207, 207 ) );
+        SolidColorBrush diezColor = new SolidColorBrush( Color.FromRgb( 25, 25, 25 ) );
+        SolidColorBrush genericColor = new SolidColorBrush( Color.FromRgb( 248, 248, 248 ) );
 
         SolidColorBrush inactiveFret = new SolidColorBrush( Color.FromArgb( 0, 0, 0, 0 ) );
         SolidColorBrush fretStroke = new SolidColorBrush( Color.FromArgb( 120, 0, 74, 225 ) );
@@ -78,10 +78,10 @@ namespace PianoKeyEmulator
         const int fretOffset = 5;
 
         const int keysOffset = 2;
-        const int keyHeight = 180;
-        const int keyWidth = 60;
-        const int diezHeight = 120;
-        const int diezWiddth = 40;
+        const int keyHeight = 155;
+        const int keyWidth = 30;
+        const int diezHeight = 100;
+        const int diezWiddth = 20;
 
         const int startOctave = 2;
         const int endOctave = 7;
@@ -151,13 +151,15 @@ namespace PianoKeyEmulator
                         currentKey.Background = genericColor;
 
                         currentKey.Margin = new Thickness( keyPosition, 0, 0, 0 );
-                        currentKey.Padding = new Thickness( 0, 150, 0, 0 );
+                        currentKey.Padding = new Thickness( 0, 130, 0, 0 );
 
                         currentKey.SetValue( Grid.ZIndexProperty, 0 );
 
                         keyPosition += keyWidth + keysOffset;
 
                         currentKey.Foreground = Brushes.Black;
+
+                        currentKey.FontSize = 14;
                     }
                     else
                     {
@@ -168,15 +170,17 @@ namespace PianoKeyEmulator
 
                         currentKey.Margin = new Thickness( keyPosition - diezWiddth / 2 + keysOffset / 2,
                             0, 0, 0 );
-                        currentKey.Padding = new Thickness( 0, 90, 0, 0 );
+                        currentKey.Padding = new Thickness( 0, 75, 0, 0 );
 
                         currentKey.SetValue( Grid.ZIndexProperty, 1 );
 
                         currentKey.Foreground = Brushes.White;
+
+                        currentKey.FontSize = 10;
                     }
 
                     currentKey.TextAlignment = TextAlignment.Center;
-                    currentKey.FontSize = 18;
+                    
                     currentKey.FontWeight = FontWeights.Bold;
                     currentKey.Focusable = true;
 

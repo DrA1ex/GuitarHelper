@@ -3,6 +3,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" xmlns:local="clr-namespace:PianoKeyEmulator" mc:Ignorable="d" x:Class="PianoKeyEmulator.MainWindow"
         Title="Guitar Helper by A1ex" Height="591" Width="1234" Closed="Window_Closed" ScrollViewer.HorizontalScrollBarVisibility="Visible" Background="Gainsboro" Loaded="Window_Loaded" MinWidth="1030" Icon="icon.ico" MinHeight="550" PreviewKeyUp="WindowKeyUp">
+    <Window.Resources>
+        <ControlTemplate x:Key="ScrollViewerControlTemplate1" TargetType="{x:Type ScrollViewer}">
+            <Grid x:Name="Grid" Background="{TemplateBinding Background}" Margin="0,-4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
+                <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="0,26,0,0" Grid.Row="0"/>
+                <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
+                <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="0" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" VerticalAlignment="Top" Margin="0,4,1,0" Height="11" RenderTransformOrigin="0.5,0.5">
+                    <ScrollBar.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </ScrollBar.RenderTransform>
+                </ScrollBar>
+            </Grid>
+        </ControlTemplate>
+    </Window.Resources>
     <Grid Margin="0,0,0,3">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -60,17 +87,17 @@
         <Label Content="Аккорды" HorizontalAlignment="Left" VerticalAlignment="Top" Width="66" Margin="614,0,0,0"/>
         <ComboBox x:Name="cChords" HorizontalAlignment="Left" Margin="685,4,0,0" VerticalAlignment="Top" Width="40" RenderTransformOrigin="1.9,0.455" SelectionChanged="ChordChanged"/>
         <Grid Height="300" Margin="3,31,164,0" VerticalAlignment="Top">
-            <Image HorizontalAlignment="Left" Width="180" Source="pack://siteoforigin:,,,/res/PianoLeft.png" Height="300" d:IsLocked="True"/>
-            <Image Margin="180,0,198,0" Source="pack://siteoforigin:,,,/res/PianoTile.png" Stretch="Fill" HorizontalAlignment="Center" d:IsLocked="True"/>
-            <Image Margin="0" Source="pack://siteoforigin:,,,/res/PianoRight.png" Width="198" Height="300" HorizontalAlignment="Right" d:IsLocked="True"/>
-            <ScrollViewer Margin="62,100,62,0" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <Image HorizontalAlignment="Left" Width="400" Source="pack://siteoforigin:,,,/res/PianoLeft.png" Height="300"/>
+            <Image Margin="400,0" Source="pack://siteoforigin:,,,/res/PianoTile.png" Stretch="Fill"/>
+            <Image Margin="0" Source="pack://siteoforigin:,,,/res/PianoRight.png" Width="400" Height="300" HorizontalAlignment="Right"/>
+            <ScrollViewer Margin="62,100,56,20" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Template="{DynamicResource ScrollViewerControlTemplate1}">
                 <Grid x:Name="KeysGrid"/>
             </ScrollViewer>
-            <Rectangle x:Name="bPlay" HorizontalAlignment="Left" Height="29" Margin="10,175,0,0" VerticalAlignment="Top" Width="37" Fill="#00000000" PreviewMouseLeftButtonUp="bPlay_PreviewMouseLeftButtonUp"/>
-            <Rectangle x:Name="bStop" HorizontalAlignment="Left" Height="29" Margin="10,226,0,0" VerticalAlignment="Top" Width="37" Fill="#00000000" PreviewMouseLeftButtonUp="bStop_PreviewMouseLeftButtonUp"/>
-            <Rectangle x:Name="bChord" Height="29" Margin="0,175,0,0" VerticalAlignment="Top" Fill="#00000000" HorizontalAlignment="Right" Width="51" PreviewMouseUp="bChord_PreviewMouseUp" PreviewMouseDown="bChord_PreviewMouseDown"/>
-            <Rectangle x:Name="bReset" Height="29" Margin="0,227,0,0" VerticalAlignment="Top" Fill="#00000000" HorizontalAlignment="Right" Width="50" PreviewMouseUp="bReset_PreviewMouseUp"/>
-            <TextBlock x:Name="tChordName" Margin="180,33,203,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF3399FF" FontSize="24" FontWeight="Bold" Height="35" TextAlignment="Center" Text="—"/>
+            <Rectangle x:Name="bPlay" HorizontalAlignment="Left" Height="29" Margin="734,50,0,0" VerticalAlignment="Top" Width="79" Fill="#00000000" PreviewMouseLeftButtonUp="bPlay_PreviewMouseLeftButtonUp"/>
+            <Rectangle x:Name="bStop" HorizontalAlignment="Left" Height="29" Margin="871,50,0,0" VerticalAlignment="Top" Width="81" Fill="#00000000" PreviewMouseLeftButtonUp="bStop_PreviewMouseLeftButtonUp"/>
+            <Rectangle x:Name="bChord" Height="29" Margin="0,50,867,0" VerticalAlignment="Top" Fill="#00000000" HorizontalAlignment="Right" Width="102" PreviewMouseUp="bChord_PreviewMouseUp" PreviewMouseDown="bChord_PreviewMouseDown"/>
+            <Rectangle x:Name="bReset" Height="29" Margin="0,50,722,0" VerticalAlignment="Top" Fill="#00000000" HorizontalAlignment="Right" Width="97" PreviewMouseUp="bReset_PreviewMouseUp"/>
+            <TextBlock x:Name="tChordName" Margin="397,46,390,0" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF573610" FontSize="14" Height="39" TextAlignment="Center" FontFamily="Tahoma" FontWeight="Bold"><Run Text="Jffasf as as s fs asfas asf asfas"/><Run Language="ru-ru" Text=" rqrjqworjqworj qrjqworjpo"/></TextBlock>
         </Grid>
         <ComboBox x:Name="cChordMods" HorizontalAlignment="Left" Margin="730,4,0,0" VerticalAlignment="Top" Width="73" RenderTransformOrigin="1.9,0.455" SelectionChanged="ChordChanged"/>
         <TextBox x:Name="tSong" AcceptsReturn="True" Height="300" Margin="0,31,3,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.483,1.13" BorderBrush="Black" Background="#FFB9B9B9" Text="F2,C3&#xD;&#xA;380&#xD;&#xA;F2,C3&#xD;&#xA;130&#xD;&#xA;F2,C3&#xD;&#xA;130&#xD;&#xA;360&#xD;&#xA;D3,G3&#xD;&#xA;260&#xD;&#xA;&#xD;&#xA;A#2,F3&#xD;&#xA;260&#xD;&#xA;A#2,F3&#xD;&#xA;130&#xD;&#xA;A#2,F3&#xD;&#xA;130&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;&#xD;&#xA;G#2,D#3&#xD;&#xA;400&#xD;&#xA;G#2,D#3&#xD;&#xA;130&#xD;&#xA;G#2,D#3&#xD;&#xA;340&#xD;&#xA;430&#xD;&#xA;&#xD;&#xA;C#3,G#3&#xD;&#xA;260&#xD;&#xA;C#3,G#3&#xD;&#xA;125&#xD;&#xA;C#3,G#3&#xD;&#xA;260&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;F2,C3&#xD;&#xA;380&#xD;&#xA;F2,C3&#xD;&#xA;130&#xD;&#xA;F2,C3&#xD;&#xA;130&#xD;&#xA;360&#xD;&#xA;D3,G3&#xD;&#xA;260&#xD;&#xA;&#xD;&#xA;A#2,F3&#xD;&#xA;260&#xD;&#xA;A#2,F3&#xD;&#xA;130&#xD;&#xA;A#2,F3&#xD;&#xA;130&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;&#xD;&#xA;G#2,D#3&#xD;&#xA;400&#xD;&#xA;G#2,D#3&#xD;&#xA;130&#xD;&#xA;G#2,D#3&#xD;&#xA;340&#xD;&#xA;430&#xD;&#xA;&#xD;&#xA;C#3,G#3&#xD;&#xA;250&#xD;&#xA;C#3,G#3&#xD;&#xA;250&#xD;&#xA;C#3,G#3&#xD;&#xA;550&#xD;&#xA;C5&#xD;&#xA;250&#xD;&#xA;F5&#xD;&#xA;550&#xD;&#xA;" FontSize="10" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Visible" HorizontalAlignment="Right" Width="156"/>
