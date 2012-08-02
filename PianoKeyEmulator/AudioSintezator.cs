@@ -63,7 +63,7 @@ namespace PianoKeyEmulator
 
         public static Note FromID( int id )
         {
-            return new Note( (byte)(id / 12), (Tones)(id % 12) );
+            return new Note( (byte)(id / 12-1), (Tones)(id % 12) );
         }
 
         public bool isDiez()
