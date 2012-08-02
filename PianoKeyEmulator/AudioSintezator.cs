@@ -56,9 +56,14 @@ namespace PianoKeyEmulator
         public static Note FromString( string str )
         {
             byte octave = byte.Parse( str.Last().ToString() );
-            Tones tone = str.Substring( 0, str.Length - 1 ).Replace('#','d').ConvertToEnum<Tones>();
+            Tones tone = str.Substring( 0, str.Length - 1 ).Replace( '#', 'd' ).ConvertToEnum<Tones>();
 
             return new Note( octave, tone );
+        }
+
+        public static Note FromID( int id )
+        {
+            return new Note( (byte)(id / 12), (Tones)(id % 12) );
         }
 
         public bool isDiez()
@@ -119,7 +124,7 @@ namespace PianoKeyEmulator
 
         public override string ToString()
         {
-            return tone.ToString().Replace('d','#') + octave;
+            return tone.ToString().Replace( 'd', '#' ) + octave;
         }
         #endregion
     }

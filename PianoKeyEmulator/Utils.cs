@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
+using NAudio.Midi;
 
 namespace PianoKeyEmulator
 {
@@ -23,6 +24,57 @@ namespace PianoKeyEmulator
                 String s = String.Format( "'{0}' is not a valid enumeration of '{1}'", enumString, temp.GetType().Name );
                 throw new Exception( s, ex );
             }
+        }
+
+        public static string ParseMIDI( string fileName )
+        {
+            MidiFile file = new MidiFile( fileName );
+            StringBuilder result = new StringBuilder();
+
+            if( file.Tracks > 0 ) //Нас не интересуют пустые midi файлы
+            {
+                IList<MidiEvent> trackEvents = file.Events[0]; // Берем данные только из 1-го трека
+
+                bool firstNote = true;
+                long startTime = 0;
+
+                foreach( MidiEvent midiEvent in trackEvents )
+                {
+                    switch( midiEvent.CommandCode )
+                    {
+                        case MidiCommandCode.NoteOn:
+                            NoteOnEvent e = midiEvent as NoteOnEvent;
+                            if( !firstNote )
+                            {
+                                result.Append( ',' );
+                            }
+                            else
+                            {
+                                startTime = e.AbsoluteTime;
+                            }
+                            result.Append( Note.FromID( e.NoteNumber ) );
+                            firstNote = false;
+
+                            break;
+                        case MidiCommandCode.NoteOff:
+                            firstNote = true;
+                            var newTime = midiEvent.AbsoluteTime;
+
+                            // Если проигрывается несколько нот, то мы получим это сообщение неск. раз
+                            // И соответственно получим паузу в 0 мс. А нам такие не нужны
+                            if( newTime - startTime > 0 ) 
+                            {
+                                result.Append( "\n" );
+                                result.Append( newTime - startTime );
+                                result.Append( "\n" );
+                            }
+                            startTime = newTime;
+                            break;
+                    }
+                }
+            }
+
+            return result.ToString();
         }
 
         static public bool CompareArrays( int[] arr0, int[] arr1 )

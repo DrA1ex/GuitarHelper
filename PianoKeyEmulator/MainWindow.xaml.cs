@@ -180,7 +180,7 @@ namespace PianoKeyEmulator
                     }
 
                     currentKey.TextAlignment = TextAlignment.Center;
-                    
+
                     currentKey.FontWeight = FontWeights.Bold;
                     currentKey.Focusable = true;
 
@@ -494,7 +494,7 @@ namespace PianoKeyEmulator
             foreach( var objName in lst )
             {
                 object o = LogicalTreeHelper.FindLogicalNode( FretsGrid,
-                    GenerateFretName(objName.Item1, objName.Item2) );
+                    GenerateFretName( objName.Item1, objName.Item2 ) );
                 if( o != null )
                 {
                     ((Shape)o).Fill = highlighted;
@@ -552,7 +552,7 @@ namespace PianoKeyEmulator
 
         internal static Note ParseKeyName( string data )
         {
-            return Note.FromString( data.Replace('#','d') );
+            return Note.FromString( data.Replace( '#', 'd' ) );
         }
         private string GenerateKeyName( Note note )
         {
@@ -600,7 +600,7 @@ namespace PianoKeyEmulator
 
                     tChordName.Text = string.Format( format,
                         type.description,
-                        baseNote.tone.ToString().Replace('d','#'),
+                        baseNote.tone.ToString().Replace( 'd', '#' ),
                         type.name );
                 }
                 catch( Exception e )
@@ -664,6 +664,39 @@ namespace PianoKeyEmulator
             }
         }
         #endregion
+
+        private void tSong_DragEnter( object sender, DragEventArgs e )
+        {
+            if( e.Data.GetDataPresent( DataFormats.FileDrop ) && !tSong.IsReadOnly )
+            {
+                e.Effects = DragDropEffects.All;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+
+            e.Handled = true;
+        }
+
+        private void tSong_Drop( object sender, DragEventArgs e )
+        {
+            try
+            {
+                string[] data = (string[])e.Data.GetData( "FileDrop", false );
+
+                if( data.Length == 1 )
+                {
+                    string fileName = data[0];
+                    if( fileName.EndsWith( ".mid" ) )
+                    {
+                        tSong.Text = Utils.ParseMIDI( fileName );
+                    }
+                }
+            }
+            catch( Exception ) { }
+
+        }
 
     }
 }

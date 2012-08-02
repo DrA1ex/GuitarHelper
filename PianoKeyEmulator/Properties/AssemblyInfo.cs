@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration( "" )]
 [assembly: AssemblyCompany( "" )]
 [assembly: AssemblyProduct( "PianoKeyEmulator" )]
-[assembly: AssemblyCopyright( "Copyright © Александр Корешняк 2012" )]
+[assembly: AssemblyCopyright( "Александр Корешняк" )]
 [assembly: AssemblyTrademark( "" )]
 [assembly: AssemblyCulture( "" )]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // Можно задать все значения или принять номер построения и номер редакции по умолчанию, 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion( "2.2.0.0" )]
-[assembly: AssemblyFileVersion( "2.2.0.0" )]
+[assembly: AssemblyVersion( "2.2.2.0" )]
+[assembly: AssemblyFileVersion( "2.2.2.0" )]

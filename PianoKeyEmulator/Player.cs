@@ -25,7 +25,6 @@ namespace PianoKeyEmulator
             this.parent = parent;
         }
 
-
         public void playMusic( string[] x )
         {
             if( cmds == null )
