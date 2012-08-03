@@ -6,6 +6,7 @@ Features:
 * Recognition of chords
 * Support for various instruments midi.
 * Making and playing music (based on the notes or chords)
+* Load a MIDI-file as song
 
 * 7 octave piano
 * 24 frets in a guitar neck
