@@ -43,15 +43,15 @@ namespace PianoKeyEmulator
     {
         public Note( byte oct, Tones t )
         {
-            octave = oct;
-            tone = t;
+            Octave = oct;
+            Tone = t;
 
-            id = 12 + octave * 12 + (int)tone;
+            Id = 12 + Octave * 12 + (int)Tone;
         }
 
-        public byte octave;
-        public Tones tone;
-        public int id;
+        public byte Octave;
+        public Tones Tone;
+        public int Id;
 
         public static Note FromString( string str )
         {
@@ -63,25 +63,25 @@ namespace PianoKeyEmulator
 
         public static Note FromID( int id )
         {
-            return new Note( (byte)(id / 12-1), (Tones)(id % 12) );
+            return new Note( (byte)(id / 12 - 1), (Tones)(id % 12) );
         }
 
         public bool isDiez()
         {
-            return tone.ToString().Contains( 'd' );
+            return Tone.ToString().Contains( 'd' );
         }
 
         #region Operators Defenition
 
         public static int operator -( Note note1, Note note2 )
         {
-            return Math.Abs( note1.id - note2.id );
+            return Math.Abs( note1.Id - note2.Id );
         }
 
         public static Note operator +( Note note, int semitons )
         {
-            byte octave = (byte)(note.octave + semitons / 12); // 12 полутонов в октаве
-            int tmp = (int)note.tone + semitons % 12;
+            byte octave = (byte)(note.Octave + semitons / 12); // 12 полутонов в октаве
+            int tmp = (int)note.Tone + semitons % 12;
             if( tmp > (int)Tones.B ) // Последняя нота в октаве
             {
                 ++octave;
@@ -94,37 +94,37 @@ namespace PianoKeyEmulator
 
         public static bool operator <( Note note1, Note note2 )
         {
-            return note1.id < note2.id;
+            return note1.Id < note2.Id;
         }
 
         public static bool operator >( Note note1, Note note2 )
         {
-            return note1.id > note2.id;
+            return note1.Id > note2.Id;
         }
 
         public static bool operator >=( Note note1, Note note2 )
         {
-            return note1.id >= note2.id;
+            return note1.Id >= note2.Id;
         }
 
         public static bool operator <=( Note note1, Note note2 )
         {
-            return note1.id <= note2.id;
+            return note1.Id <= note2.Id;
         }
 
         public static bool operator ==( Note note1, Note note2 )
         {
-            return note1.id == note2.id;
+            return note1.Id == note2.Id;
         }
 
         public static bool operator !=( Note note1, Note note2 )
         {
-            return note1.id != note2.id;
+            return note1.Id != note2.Id;
         }
 
         public override string ToString()
         {
-            return tone.ToString().Replace( 'd', '#' ) + octave;
+            return Tone.ToString().Replace( 'd', '#' ) + Octave;
         }
         #endregion
     }
@@ -316,7 +316,7 @@ namespace PianoKeyEmulator
 
         public bool isNotePlayed( Note note )
         {
-            return playingTones.Contains( note.id );
+            return playingTones.Contains( note.Id );
         }
 
         public void Dispose()

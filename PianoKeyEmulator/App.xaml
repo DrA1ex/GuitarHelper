@@ -5,6 +5,6 @@
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-       
+
     </Application.Resources>
 </Application>

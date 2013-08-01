@@ -75,8 +75,8 @@ namespace PianoKeyEmulator
 
             if( open <= note )
             {
-                int octDiff = note.octave - open.octave;
-                int noteDiff = note.tone - open.tone;
+                int octDiff = note.Octave - open.Octave;
+                int noteDiff = note.Tone - open.Tone;
 
                 fret = octDiff * 12 + noteDiff;
             }
