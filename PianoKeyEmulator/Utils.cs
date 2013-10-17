@@ -37,7 +37,6 @@ namespace PianoKeyEmulator
 
                 bool firstNote = true;
                 long startTime = 0, newTime = 0;
-                long pause = 0;
 
                 foreach (MidiEvent midiEvent in trackEvents)
                 {

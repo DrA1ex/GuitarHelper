@@ -10,25 +10,25 @@ namespace PianoKeyEmulator
 
     internal struct ChordType
     {
-        public ChordType( string desc, string name, params int[] intervals )
+        public ChordType(string desc, string name, params int[] intervals)
         {
             this.description = desc;
             this.name = name;
             this.intervals = intervals;
         }
 
-        public List<Note> BuildChord( Note baseNote )
+        public List<Note> BuildChord(Note baseNote)
         {
             List<Note> result = new List<Note>();
 
-            result.Add( baseNote );
+            result.Add(baseNote);
 
             Note current = baseNote;
 
-            foreach( var interval in intervals )
+            foreach (var interval in intervals)
             {
                 current = current + interval;
-                result.Add( current );
+                result.Add(current);
             }
 
             return result;
@@ -41,7 +41,7 @@ namespace PianoKeyEmulator
 
     internal struct Note
     {
-        public Note( byte oct, Tones t )
+        public Note(byte oct, Tones t)
         {
             Octave = oct;
             Tone = t;
@@ -53,78 +53,78 @@ namespace PianoKeyEmulator
         public Tones Tone;
         public int Id;
 
-        public static Note FromString( string str )
+        public static Note FromString(string str)
         {
-            byte octave = byte.Parse( str.Last().ToString() );
-            Tones tone = str.Substring( 0, str.Length - 1 ).Replace( '#', 'd' ).ConvertToEnum<Tones>();
+            byte octave = byte.Parse(str.Last().ToString());
+            Tones tone = str.Substring(0, str.Length - 1).Replace('#', 'd').ConvertToEnum<Tones>();
 
-            return new Note( octave, tone );
+            return new Note(octave, tone);
         }
 
-        public static Note FromID( int id )
+        public static Note FromID(int id)
         {
-            return new Note( (byte)(id / 12 - 1), (Tones)(id % 12) );
+            return new Note((byte)(id / 12 - 1), (Tones)(id % 12));
         }
 
         public bool isDiez()
         {
-            return Tone.ToString().Contains( 'd' );
+            return Tone.ToString().Contains('d');
         }
 
         #region Operators Defenition
 
-        public static int operator -( Note note1, Note note2 )
+        public static int operator -(Note note1, Note note2)
         {
-            return Math.Abs( note1.Id - note2.Id );
+            return Math.Abs(note1.Id - note2.Id);
         }
 
-        public static Note operator +( Note note, int semitons )
+        public static Note operator +(Note note, int semitons)
         {
             byte octave = (byte)(note.Octave + semitons / 12); // 12 полутонов в октаве
             int tmp = (int)note.Tone + semitons % 12;
-            if( tmp > (int)Tones.B ) // Последняя нота в октаве
+            if (tmp > (int)Tones.B) // Последняя нота в октаве
             {
                 ++octave;
                 tmp = tmp % 12;
             }
             Tones tone = (Tones)(tmp);
 
-            return new Note( octave, tone );
+            return new Note(octave, tone);
         }
 
-        public static bool operator <( Note note1, Note note2 )
+        public static bool operator <(Note note1, Note note2)
         {
             return note1.Id < note2.Id;
         }
 
-        public static bool operator >( Note note1, Note note2 )
+        public static bool operator >(Note note1, Note note2)
         {
             return note1.Id > note2.Id;
         }
 
-        public static bool operator >=( Note note1, Note note2 )
+        public static bool operator >=(Note note1, Note note2)
         {
             return note1.Id >= note2.Id;
         }
 
-        public static bool operator <=( Note note1, Note note2 )
+        public static bool operator <=(Note note1, Note note2)
         {
             return note1.Id <= note2.Id;
         }
 
-        public static bool operator ==( Note note1, Note note2 )
+        public static bool operator ==(Note note1, Note note2)
         {
             return note1.Id == note2.Id;
         }
 
-        public static bool operator !=( Note note1, Note note2 )
+        public static bool operator !=(Note note1, Note note2)
         {
             return note1.Id != note2.Id;
         }
 
         public override string ToString()
         {
-            return Tone.ToString().Replace( 'd', '#' ) + Octave;
+            return Tone.ToString().Replace('d', '#') + Octave;
         }
         #endregion
     }
@@ -269,54 +269,54 @@ namespace PianoKeyEmulator
             Gunshot
         }
 
-        public int PlayTone( byte octave, Tones tone )
+        public int PlayTone(byte octave, Tones tone, int strength = 127)
         {
             int note = 12 + octave * 12 + (int)tone; // 12 полутонов в октаве, начинаем считать с 0-й октавы (есть еще и -1-ая)
 
-            if( !playingTones.Contains( note ) )
+            if (!playingTones.Contains(note))
             {
-                midiOut.Send( MidiMessage.StartNote( note, 127, 0 ).RawData ); // воспроизводим ноту с макс. силой нажатия на канале 0
-                playingTones.Add( note );
+                midiOut.Send(MidiMessage.StartNote(note, strength, 0).RawData); // воспроизводим ноту с макс. силой нажатия на канале 0
+                playingTones.Add(note);
             }
 
             return note;
         }
 
-        public void StopPlaying( int id )
+        public void StopPlaying(int id)
         {
-            if( playingTones.Contains( id ) )
+            if (playingTones.Contains(id))
             {
-                midiOut.Send( MidiMessage.StopNote( id, 0, 0 ).RawData );
-                playingTones.Remove( id );
+                midiOut.Send(MidiMessage.StopNote(id, 0, 0).RawData);
+                playingTones.Remove(id);
             }
         }
 
-        public void StopPlaying( byte octave, Tones tone )
+        public void StopPlaying(byte octave, Tones tone)
         {
-            StopPlaying( 12 + octave * 12 + (int)tone );
+            StopPlaying(12 + octave * 12 + (int)tone);
         }
 
         public void StopAll()
         {
-            while( playingTones.Count > 0 )
+            while (playingTones.Count > 0)
             {
-                StopPlaying( playingTones.First() );
+                StopPlaying(playingTones.First());
             }
 
             playingTones.Clear();
         }
 
-        public void SetInstrument( Instruments instrument )
+        public void SetInstrument(Instruments instrument)
         {
-            midiOut.Send( MidiMessage.ChangePatch( (int)instrument, 0 ).RawData );
+            midiOut.Send(MidiMessage.ChangePatch((int)instrument, 0).RawData);
         }
 
-        MidiOut midiOut = new MidiOut( 0 );
+        MidiOut midiOut = new MidiOut(0);
         List<int> playingTones = new List<int>();
 
-        public bool isNotePlayed( Note note )
+        public bool isNotePlayed(Note note)
         {
-            return playingTones.Contains( note.Id );
+            return playingTones.Contains(note.Id);
         }
 
         public void Dispose()
