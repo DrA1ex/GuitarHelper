@@ -1,25 +1,25 @@
 ﻿using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle( "Guitar Helper" )]
-[assembly: AssemblyDescription( "" )]
-[assembly: AssemblyConfiguration( "" )]
-[assembly: AssemblyCompany( "" )]
-[assembly: AssemblyProduct( "PianoKeyEmulator" )]
-[assembly: AssemblyCopyright( "Александр Корешняк" )]
-[assembly: AssemblyTrademark( "" )]
-[assembly: AssemblyCulture( "" )]
+
+[assembly: AssemblyTitle("Guitar Helper")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("PianoKeyEmulator")]
+[assembly: AssemblyCopyright("Александр Корешняк")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
 
 // Параметр ComVisible со значением FALSE делает типы в сборке невидимыми 
 // для COM-компонентов.  Если требуется обратиться к типу в этой сборке через 
 // COM, задайте атрибуту ComVisible значение TRUE для этого типа.
-[assembly: ComVisible( false )]
+
+[assembly: ComVisible(false)]
 
 //Чтобы начать построение локализованных приложений, задайте 
 //<UICulture>CultureYouAreCodingWith</UICulture> в файле .csproj
@@ -38,7 +38,7 @@ using System.Windows;
     ResourceDictionaryLocation.SourceAssembly //где расположен словарь универсальных ресурсов
     //(используется, если ресурс не найден на странице, 
     // в приложении или в каких-либо словарях ресурсов для конкретной темы)
-)]
+    )]
 
 
 // Сведения о версии сборки состоят из следующих четырех значений:
@@ -51,5 +51,6 @@ using System.Windows;
 // Можно задать все значения или принять номер построения и номер редакции по умолчанию, 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
+
 [assembly: AssemblyVersion("2.3.1.0")]
 [assembly: AssemblyFileVersion("2.3.1.0")]

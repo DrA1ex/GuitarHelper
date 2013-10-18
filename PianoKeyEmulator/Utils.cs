@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Windows.Media;
 using NAudio.Midi;
 
 namespace PianoKeyEmulator
 {
-    static class Utils
+    internal static class Utils
     {
-
         public static T ConvertToEnum<T>(this string enumString)
         {
             try
             {
-                return (T)Enum.Parse(typeof(T), enumString, true);
+                return (T) Enum.Parse(typeof (T), enumString, true);
             }
             catch (Exception ex)
             {
@@ -28,8 +26,8 @@ namespace PianoKeyEmulator
 
         public static string ParseMIDI(string fileName)
         {
-            MidiFile file = new MidiFile(fileName);
-            StringBuilder result = new StringBuilder();
+            var file = new MidiFile(fileName);
+            var result = new StringBuilder();
 
             if (file.Tracks > 0) //Нас не интересуют пустые midi файлы
             {
@@ -43,7 +41,7 @@ namespace PianoKeyEmulator
                     switch (midiEvent.CommandCode)
                     {
                         case MidiCommandCode.NoteOn:
-                            NoteOnEvent e = midiEvent as NoteOnEvent;
+                            var e = midiEvent as NoteOnEvent;
                             if (!firstNote)
                             {
                                 result.Append(',');
@@ -52,7 +50,7 @@ namespace PianoKeyEmulator
                             {
                                 startTime = e.AbsoluteTime;
 
-                                var delta = startTime - newTime;
+                                long delta = startTime - newTime;
                                 if (delta > 0 && newTime > 0) //Если есть пауза, и она не в начале трека
                                 {
                                     result.AppendLine("pause");
@@ -60,7 +58,7 @@ namespace PianoKeyEmulator
                                 }
                             }
 
-                            result.Append(Note.FromID(e.NoteNumber).ToString());
+                            result.Append(Note.FromID(e.NoteNumber));
                             firstNote = false;
 
                             break;
@@ -88,19 +86,27 @@ namespace PianoKeyEmulator
             return result.ToString();
         }
 
-        static public bool CompareArrays(int[] arr0, int[] arr1)
+        public static bool CompareArrays(int[] arr0, int[] arr1)
         {
-            if (arr0.Length != arr1.Length) return false;
+            if (arr0.Length != arr1.Length)
+            {
+                return false;
+            }
             for (int i = 0; i < arr0.Length; i++)
-                if (arr0[i] != arr1[i]) return false;
+            {
+                if (arr0[i] != arr1[i])
+                {
+                    return false;
+                }
+            }
             return true;
         }
 
-        static public int CountOfTones(Tones tone, List<Note> notes)
+        public static int CountOfTones(Tones tone, List<Note> notes)
         {
             int count = 0;
 
-            foreach (var current in notes)
+            foreach (Note current in notes)
             {
                 if (current.Tone == tone)
                 {
@@ -111,14 +117,14 @@ namespace PianoKeyEmulator
             return count;
         }
 
-        static public void Swap<T>(List<T> lst, int x, int y)
+        public static void Swap<T>(List<T> lst, int x, int y)
         {
             T tmp = lst[x];
             lst[x] = lst[y];
             lst[y] = tmp;
         }
 
-        static public IEnumerable<List<T>> GeneratePermutation<T>(List<T> list, int k = 0)
+        public static IEnumerable<List<T>> GeneratePermutation<T>(List<T> list, int k = 0)
         {
             int i;
             if (k == list.Count)
@@ -126,6 +132,7 @@ namespace PianoKeyEmulator
                 yield return list;
             }
             else
+            {
                 for (i = k; i < list.Count; i++)
                 {
                     Swap(list, k, i);
@@ -135,19 +142,19 @@ namespace PianoKeyEmulator
                     }
                     Swap(list, k, i);
                 }
-
-            yield break;
+            }
         }
     }
 
-    struct ColorItem
+    internal struct ColorItem
     {
+        public Color color;
+        public bool free;
+
         public ColorItem(bool free, Color color)
         {
             this.free = free;
             this.color = color;
         }
-        public bool free;
-        public Color color;
     }
 }

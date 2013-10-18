@@ -1,31 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NAudio.Midi;
 
 namespace PianoKeyEmulator
 {
-
     internal struct ChordType
     {
+        public string description;
+        public int[] intervals;
+        public string name;
+
         public ChordType(string desc, string name, params int[] intervals)
         {
-            this.description = desc;
+            description = desc;
             this.name = name;
             this.intervals = intervals;
         }
 
         public List<Note> BuildChord(Note baseNote)
         {
-            List<Note> result = new List<Note>();
+            var result = new List<Note>();
 
             result.Add(baseNote);
 
             Note current = baseNote;
 
-            foreach (var interval in intervals)
+            foreach (int interval in intervals)
             {
                 current = current + interval;
                 result.Add(current);
@@ -33,37 +34,33 @@ namespace PianoKeyEmulator
 
             return result;
         }
-
-        public string description;
-        public string name;
-        public int[] intervals;
     }
 
     internal struct Note
     {
+        public int Id;
+        public byte Octave;
+        public Tones Tone;
+
         public Note(byte oct, Tones t)
         {
             Octave = oct;
             Tone = t;
 
-            Id = 12 + Octave * 12 + (int)Tone;
+            Id = 12 + Octave*12 + (int) Tone;
         }
-
-        public byte Octave;
-        public Tones Tone;
-        public int Id;
 
         public static Note FromString(string str)
         {
             byte octave = byte.Parse(str.Last().ToString());
-            Tones tone = str.Substring(0, str.Length - 1).Replace('#', 'd').ConvertToEnum<Tones>();
+            var tone = str.Substring(0, str.Length - 1).Replace('#', 'd').ConvertToEnum<Tones>();
 
             return new Note(octave, tone);
         }
 
         public static Note FromID(int id)
         {
-            return new Note((byte)(id / 12 - 1), (Tones)(id % 12));
+            return new Note((byte) (id/12 - 1), (Tones) (id%12));
         }
 
         public bool isDiez()
@@ -80,14 +77,14 @@ namespace PianoKeyEmulator
 
         public static Note operator +(Note note, int semitons)
         {
-            byte octave = (byte)(note.Octave + semitons / 12); // 12 полутонов в октаве
-            int tmp = (int)note.Tone + semitons % 12;
-            if (tmp > (int)Tones.B) // Последняя нота в октаве
+            var octave = (byte) (note.Octave + semitons/12); // 12 полутонов в октаве
+            int tmp = (int) note.Tone + semitons%12;
+            if (tmp > (int) Tones.B) // Последняя нота в октаве
             {
                 ++octave;
-                tmp = tmp % 12;
+                tmp = tmp%12;
             }
-            Tones tone = (Tones)(tmp);
+            var tone = (Tones) (tmp);
 
             return new Note(octave, tone);
         }
@@ -126,16 +123,27 @@ namespace PianoKeyEmulator
         {
             return Tone.ToString().Replace('d', '#') + Octave;
         }
+
         #endregion
     }
 
     public enum Tones
     {
-        A = 9, Ad = 10, B = 11, C = 0, Cd = 1,
-        D = 2, Dd = 3, E = 4, F = 5, Fd = 6, G = 7, Gd = 8
+        A = 9,
+        Ad = 10,
+        B = 11,
+        C = 0,
+        Cd = 1,
+        D = 2,
+        Dd = 3,
+        E = 4,
+        F = 5,
+        Fd = 6,
+        G = 7,
+        Gd = 8
     }
 
-    class AudioSintezator : IDisposable
+    internal class AudioSintezator : IDisposable
     {
         public enum Instruments
         {
@@ -269,9 +277,18 @@ namespace PianoKeyEmulator
             Gunshot
         }
 
+        private readonly MidiOut midiOut = new MidiOut(0);
+        private readonly List<int> playingTones = new List<int>();
+
+        public void Dispose()
+        {
+            midiOut.Close();
+            midiOut.Dispose();
+        }
+
         public int PlayTone(byte octave, Tones tone, int strength = 127)
         {
-            int note = 12 + octave * 12 + (int)tone; // 12 полутонов в октаве, начинаем считать с 0-й октавы (есть еще и -1-ая)
+            int note = 12 + octave*12 + (int) tone; // 12 полутонов в октаве, начинаем считать с 0-й октавы (есть еще и -1-ая)
 
             if (!playingTones.Contains(note))
             {
@@ -293,7 +310,7 @@ namespace PianoKeyEmulator
 
         public void StopPlaying(byte octave, Tones tone)
         {
-            StopPlaying(12 + octave * 12 + (int)tone);
+            StopPlaying(12 + octave*12 + (int) tone);
         }
 
         public void StopAll()
@@ -308,21 +325,12 @@ namespace PianoKeyEmulator
 
         public void SetInstrument(Instruments instrument)
         {
-            midiOut.Send(MidiMessage.ChangePatch((int)instrument, 0).RawData);
+            midiOut.Send(MidiMessage.ChangePatch((int) instrument, 0).RawData);
         }
-
-        MidiOut midiOut = new MidiOut(0);
-        List<int> playingTones = new List<int>();
 
         public bool isNotePlayed(Note note)
         {
             return playingTones.Contains(note.Id);
-        }
-
-        public void Dispose()
-        {
-            midiOut.Close();
-            midiOut.Dispose();
         }
     }
 }

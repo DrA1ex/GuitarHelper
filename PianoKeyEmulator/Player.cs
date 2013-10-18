@@ -2,27 +2,24 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Windows.Threading;
+using System.Windows.Shapes;
 
 namespace PianoKeyEmulator
 {
-    class Player
+    internal class Player
     {
-        int currentLine = -1;
-        string[] cmds = null;
-        MainWindow parent = null;
-        double playSpeed = 1;
-
-        delegate int RunCmdDelegate(string cmd);
-        delegate void ToggleNoteDelegate(Note note, System.Windows.Shapes.Shape major);
-        delegate void SetCurrentLineDelegate(int line);
+        private readonly MainWindow parent;
+        private string[] cmds;
+        private int currentLine = -1;
+        private double playSpeed = 1;
 
         public Player(MainWindow parent)
         {
             if (parent == null)
+            {
                 throw new Exception("Родитель не может быть null");
+            }
             this.parent = parent;
         }
 
@@ -31,7 +28,9 @@ namespace PianoKeyEmulator
             if (cmds == null)
             {
                 if (currentLine >= x.Length || currentLine < 0)
+                {
                     currentLine = 0;
+                }
                 cmds = x;
 
                 ThreadPool.QueueUserWorkItem(RunCmds);
@@ -51,14 +50,16 @@ namespace PianoKeyEmulator
                 cmds = null;
                 parent.StopPlayAll();
             }
-
         }
 
         public void SetStartPos(int pos)
         {
             if (cmds == null) // Если не проигрывается
+            {
                 currentLine = pos;
+            }
         }
+
         public void SetPlaySpeed(double speed)
         {
             playSpeed = speed;
@@ -68,18 +69,18 @@ namespace PianoKeyEmulator
         {
             while (cmds != null && currentLine >= 0 && currentLine < cmds.Length)
             {
-                int sleepTime = (int)((int)parent.Dispatcher.Invoke(
-                    new RunCmdDelegate(RunCmd), new object[] { cmds[currentLine] }
-                    ) / playSpeed);
+                var sleepTime = (int) ((int) parent.Dispatcher.Invoke(
+                    new RunCmdDelegate(RunCmd), new object[] {cmds[currentLine]}
+                    )/playSpeed);
                 Thread.Sleep(sleepTime);
-                parent.Dispatcher.Invoke((SetCurrentLineDelegate)parent.SetCurrentLine, new object[] { ++currentLine });
+                parent.Dispatcher.Invoke((SetCurrentLineDelegate) parent.SetCurrentLine, new object[] {++currentLine});
             }
 
             cmds = null;
             currentLine = -1;
-            parent.Dispatcher.Invoke((Action)parent.StopPlayAll, null);
-
+            parent.Dispatcher.Invoke((Action) parent.StopPlayAll, null);
         }
+
         private int RunCmd(string cmd)
         {
             int newInterval = 0;
@@ -89,7 +90,7 @@ namespace PianoKeyEmulator
                 {
                     if (cmd.StartsWith("@")) // Если аккорд
                     {
-                        var lst = cmd.Substring(1).Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] lst = cmd.Substring(1).Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
                         if (lst.Length > 0)
                         {
                             try
@@ -110,30 +111,32 @@ namespace PianoKeyEmulator
 
                                 string chordName = "";
                                 if (lst.Length >= 2)
-                                // Если через пробел еще что-то было, значит аккорд не мажорный (у мажорного нет никаких суфиксов)
+                                    // Если через пробел еще что-то было, значит аккорд не мажорный (у мажорного нет никаких суфиксов)
                                 {
                                     chordName = lst[1]; // 1-й элемент должен содержать тип аккорда (например sus2)
                                 }
 
                                 int type = 0;
-                                foreach (var chord in Chords.chordTypes)
+                                foreach (ChordType chord in Chords.chordTypes)
                                 {
                                     if (chord.name == chordName)
+                                    {
                                         break;
+                                    }
                                     ++type;
                                 }
 
                                 if (type < Chords.chordTypes.Length)
                                 {
-                                    parent.Dispatcher.Invoke((Action)parent.StopPlayAll, null);
-                                    var chord = Chords.chordTypes[type].BuildChord(baseNote);
+                                    parent.Dispatcher.Invoke((Action) parent.StopPlayAll, null);
+                                    List<Note> chord = Chords.chordTypes[type].BuildChord(baseNote);
 
-                                    foreach (var chordNote in chord)
+                                    foreach (Note chordNote in chord)
                                     {
-                                        parent.Dispatcher.Invoke((ToggleNoteDelegate)parent.ToggleNote,
-                                                                 new object[] { chordNote, null });
+                                        parent.Dispatcher.Invoke((ToggleNoteDelegate) parent.ToggleNote,
+                                            new object[] {chordNote, null});
                                     }
-                                    parent.Dispatcher.Invoke((Action)parent.PlayToggled, null);
+                                    parent.Dispatcher.Invoke((Action) parent.PlayToggled, null);
                                 }
                             }
                             catch (Exception e)
@@ -144,22 +147,24 @@ namespace PianoKeyEmulator
                     }
                     else // Если набор нот
                     {
-                        var lst = cmd.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] lst = cmd.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries);
 
                         if (lst.Length > 0)
                         {
-                            parent.Dispatcher.Invoke((Action)parent.StopPlayAll, null);
-                            foreach (var note in lst.Distinct())
+                            parent.Dispatcher.Invoke((Action) parent.StopPlayAll, null);
+                            foreach (string note in lst.Distinct())
                             {
                                 try
                                 {
                                     Note tmp = Note.FromString(note);
-                                    parent.Dispatcher.Invoke((ToggleNoteDelegate)parent.ToggleNote,
-                                            new object[] { tmp, null });
+                                    parent.Dispatcher.Invoke((ToggleNoteDelegate) parent.ToggleNote,
+                                        new object[] {tmp, null});
                                 }
-                                catch (Exception) { }
+                                catch (Exception)
+                                {
+                                }
                             }
-                            parent.Dispatcher.Invoke((Action)parent.PlayToggled, null);
+                            parent.Dispatcher.Invoke((Action) parent.PlayToggled, null);
                         }
                     }
                 }
@@ -167,5 +172,11 @@ namespace PianoKeyEmulator
 
             return newInterval;
         }
+
+        private delegate int RunCmdDelegate(string cmd);
+
+        private delegate void SetCurrentLineDelegate(int line);
+
+        private delegate void ToggleNoteDelegate(Note note, Shape major);
     }
 }

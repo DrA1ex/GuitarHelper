@@ -1,32 +1,51 @@
 ﻿<Window
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PianoKeyEmulator"
-        xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
-        mc:Ignorable="d" x:Class="PianoKeyEmulator.MainWindow"
-        Title="Guitar Helper by A1ex" Height="591" Width="1234" Closed="Window_Closed" ScrollViewer.HorizontalScrollBarVisibility="Visible" Background="Gainsboro" Loaded="Window_Loaded" MinWidth="1030" Icon="icon.ico" MinHeight="550" PreviewKeyUp="WindowKeyUp" x:Name="control">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:PianoKeyEmulator"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+    mc:Ignorable="d" x:Class="PianoKeyEmulator.MainWindow"
+    Title="Guitar Helper by A1ex" Height="591" Width="1234" Closed="WindowClosed"
+    ScrollViewer.HorizontalScrollBarVisibility="Visible" Background="Gainsboro" Loaded="WindowLoaded" MinWidth="1030"
+    Icon="icon.ico" MinHeight="550" PreviewKeyUp="WindowKeyUp" x:Name="Control">
     <Window.Resources>
         <ControlTemplate x:Key="ScrollViewerControlTemplate1" TargetType="{x:Type ScrollViewer}">
             <Grid x:Name="Grid" Background="{TemplateBinding Background}" Margin="0,-4,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
-                <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="0,26,0,0" Grid.Row="0"/>
-                <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
-                <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="0" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" VerticalAlignment="Top" Margin="0,4,1,0" Height="11" RenderTransformOrigin="0.5,0.5">
+                <Rectangle x:Name="Corner" Grid.Column="1"
+                           Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1" />
+                <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                        CanContentScroll="{TemplateBinding CanContentScroll}"
+                                        CanHorizontallyScroll="False" CanVerticallyScroll="False"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                        Content="{TemplateBinding Content}" Grid.Column="0" Margin="0,26,0,0"
+                                        Grid.Row="0" />
+                <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar"
+                           Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0"
+                           Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                           Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                           ViewportSize="{TemplateBinding ViewportHeight}" />
+                <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar"
+                           Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0"
+                           Orientation="Horizontal" Grid.Row="0"
+                           Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                           Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                           ViewportSize="{TemplateBinding ViewportWidth}" VerticalAlignment="Top" Margin="0,4,1,0"
+                           Height="11" RenderTransformOrigin="0.5,0.5">
                     <ScrollBar.RenderTransform>
                         <TransformGroup>
-                            <ScaleTransform ScaleY="-1"/>
-                            <SkewTransform/>
-                            <RotateTransform/>
-                            <TranslateTransform/>
+                            <ScaleTransform ScaleY="-1" />
+                            <SkewTransform />
+                            <RotateTransform />
+                            <TranslateTransform />
                         </TransformGroup>
                     </ScrollBar.RenderTransform>
                 </ScrollBar>
@@ -36,110 +55,137 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="200" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="300"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="300" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Grid.ColumnSpan="2" x:Name="topPanel" IsEnabled="{Binding ElementName=tSong, Path=IsReadOnly, Converter={StaticResource BoolInvertConverter}}">
+        <DockPanel Grid.Row="0" Grid.ColumnSpan="2" x:Name="TopPanel"
+                   IsEnabled="{Binding ElementName=TSong, Path=IsReadOnly, Converter={StaticResource BoolInvertConverter}}">
             <Label Content="Инструмент" HorizontalAlignment="Left" Margin="3" />
-            <controls:AutoCompleteBox x:Name="cInstrument" HorizontalAlignment="Left" Margin="3"  Width="239" SelectionChanged="cInstrument_SelectionChanged" VerticalAlignment="Center" FilterMode="Contains" PreviewMouseUp="cInstrument_PreviewMouseUp" MinimumPrefixLength="0"/>
+            <controls:AutoCompleteBox x:Name="CInstrument" HorizontalAlignment="Left" Margin="3" Width="Auto"
+                                      SelectionChanged="CInstrumentSelectionChanged" VerticalAlignment="Center"
+                                      FilterMode="Contains" PreviewMouseUp="CInstrumentPreviewMouseUp"
+                                      MinimumPrefixLength="0" MinWidth="100" />
 
             <Label Content="Строй" HorizontalAlignment="Left" Margin="3" />
-            <ComboBox DisplayMemberPath="Item1" x:Name="cTunes" Margin="3" HorizontalAlignment="Left"  Width="229" SelectionChanged="cTunes_SelectionChanged" VerticalAlignment="Center"/>
+            <ComboBox DisplayMemberPath="Item1" x:Name="CTunes" Margin="3" HorizontalAlignment="Left" Width="Auto"
+                      SelectionChanged="CTunesSelectionChanged" VerticalAlignment="Center" />
 
             <Label Content="Аккорды" HorizontalAlignment="Left" Margin="3" />
-            <ComboBox x:Name="cChords" HorizontalAlignment="Left" Margin="3" Width="40" SelectionChanged="ChordChanged" VerticalAlignment="Center"/>
-            <ComboBox x:Name="cChordMods" HorizontalAlignment="Left" Margin="3" Width="75" SelectionChanged="ChordChanged" VerticalAlignment="Center"/>
+            <ComboBox x:Name="CChords" HorizontalAlignment="Left" Margin="3" Width="40" SelectionChanged="ChordChanged"
+                      VerticalAlignment="Center" />
+            <ComboBox x:Name="CChordMods" HorizontalAlignment="Left" Margin="3" Width="75"
+                      SelectionChanged="ChordChanged" VerticalAlignment="Center" />
 
             <Label Content="Скорость" HorizontalAlignment="Left" Margin="3" />
-            <ComboBox x:Name="cPlaySpeed" HorizontalAlignment="Left" Margin="3" SelectionChanged="cPlaySpeed_SelectionChanged" VerticalAlignment="Center"/>
+            <ComboBox x:Name="CPlaySpeed" HorizontalAlignment="Left" Margin="3"
+                      SelectionChanged="CPlaySpeedSelectionChanged" VerticalAlignment="Center" />
+
+            <Label Content="MIDI вход" HorizontalAlignment="Left" Margin="3" />
+            <ComboBox DisplayMemberPath="ProductName" x:Name="CSelectedInput" Margin="3" HorizontalAlignment="Left"
+                      Width="Auto" SelectionChanged="CSelectedInput_OnSelectionChanged" VerticalAlignment="Center"
+                      MinWidth="100" />
 
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3,3,9,3">
                 <TextBlock.Text>
                     <MultiBinding StringFormat="Строка {0} из {1}">
-                        <Binding ElementName="tSong" Path="(local:CaretBehavior.LineIndex)"/>
-                        <Binding ElementName="control" Path="LineCount"/>
+                        <Binding ElementName="TSong" Path="(local:CaretBehavior.LineIndex)" />
+                        <Binding ElementName="Control" Path="LineCount" />
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
         </DockPanel>
 
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Grid.Column="0">
             <Grid Height="300">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <Image Grid.Column="0" Source="pack://siteoforigin:,,,/res/PianoLeft.png"/>
-                <Image Grid.Column="1" Source="pack://siteoforigin:,,,/res/PianoTile.png" Stretch="Fill"/>
-                <Image Grid.Column="2" Source="pack://siteoforigin:,,,/res/PianoRight.png"/>
+                <Image Grid.Column="0" Source="pack://siteoforigin:,,,/res/PianoLeft.png" />
+                <Image Grid.Column="1" Source="pack://siteoforigin:,,,/res/PianoTile.png" Stretch="Fill" />
+                <Image Grid.Column="2" Source="pack://siteoforigin:,,,/res/PianoRight.png" />
 
-                <TextBlock Grid.Column="1" x:Name="tChordName" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="#FF573610" FontSize="14" Height="39" TextAlignment="Center" FontFamily="Tahoma" FontWeight="Bold" Margin="0,44,0,0">Минорное трезвучие A#</TextBlock>
+                <TextBlock Grid.Column="1" x:Name="TChordName" TextWrapping="Wrap" VerticalAlignment="Top"
+                           Foreground="#FF573610" FontSize="14" Height="39" TextAlignment="Center" FontFamily="Tahoma"
+                           FontWeight="Bold" Margin="0,44,0,0">
+                    Минорное трезвучие A#
+                </TextBlock>
             </Grid>
-            <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Template="{DynamicResource ScrollViewerControlTemplate1}" Margin="60,101,60,22">
-                <Grid x:Name="KeysGrid"/>
+            <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden"
+                          HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                          Template="{DynamicResource ScrollViewerControlTemplate1}" Margin="60,101,60,22">
+                <Grid x:Name="KeysGrid" />
             </ScrollViewer>
-            <Rectangle x:Name="bPlay" Height="29"  VerticalAlignment="Top" Fill="#00000000" PreviewMouseLeftButtonUp="bPlay_PreviewMouseLeftButtonUp" Margin="0,50,242,0" HorizontalAlignment="Right" Width="79"/>
-            <Rectangle x:Name="bStop" Height="29"  VerticalAlignment="Top" Fill="#00000000" PreviewMouseLeftButtonUp="bStop_PreviewMouseLeftButtonUp" Margin="0,50,103,0" HorizontalAlignment="Right" Width="81"/>
-            <Rectangle x:Name="bChord" Height="29"  VerticalAlignment="Top" Fill="#00000000" PreviewMouseUp="bChord_PreviewMouseUp" PreviewMouseDown="bChord_PreviewMouseDown" Margin="84,50,0,0" HorizontalAlignment="Left" Width="102"/>
-            <Rectangle x:Name="bReset" Height="29"  VerticalAlignment="Top" Fill="#00000000" PreviewMouseUp="bReset_PreviewMouseUp" Margin="230,50,0,0" HorizontalAlignment="Left" Width="97"/>
+            <Rectangle x:Name="BPlay" Height="29" VerticalAlignment="Top" Fill="#00000000"
+                       PreviewMouseLeftButtonUp="BPlayPreviewMouseLeftButtonUp" Margin="0,50,242,0"
+                       HorizontalAlignment="Right" Width="79" />
+            <Rectangle x:Name="BStop" Height="29" VerticalAlignment="Top" Fill="#00000000"
+                       PreviewMouseLeftButtonUp="BStopPreviewMouseLeftButtonUp" Margin="0,50,103,0"
+                       HorizontalAlignment="Right" Width="81" />
+            <Rectangle x:Name="BChord" Height="29" VerticalAlignment="Top" Fill="#00000000"
+                       PreviewMouseUp="BChordPreviewMouseUp" PreviewMouseDown="BChordPreviewMouseDown"
+                       Margin="84,50,0,0" HorizontalAlignment="Left" Width="102" />
+            <Rectangle x:Name="BReset" Height="29" VerticalAlignment="Top" Fill="#00000000"
+                       PreviewMouseUp="BResetPreviewMouseUp" Margin="230,50,0,0" HorizontalAlignment="Left" Width="97" />
         </Grid>
 
-        <TextBox Margin="3" x:Name="tSong" Grid.Row="1" Grid.Column="1" 
-                 local:CaretBehavior.ObserveCaret="True" AcceptsReturn="True" 
-                 TextWrapping="WrapWithOverflow" VerticalAlignment="Stretch" 
-                 BorderBrush="Black" Background="#FFB9B9B9" 
+        <TextBox Margin="3" x:Name="TSong" Grid.Row="1" Grid.Column="1"
+                 local:CaretBehavior.ObserveCaret="True" AcceptsReturn="True"
+                 TextWrapping="WrapWithOverflow" VerticalAlignment="Stretch"
+                 BorderBrush="Black" Background="#FFB9B9B9"
                  Text="F2,C3&#xD;&#xA;380&#xD;&#xA;F2,C3&#xD;&#xA;130&#xD;&#xA;F2,C3&#xD;&#xA;130&#xD;&#xA;360&#xD;&#xA;D3,G3&#xD;&#xA;260&#xD;&#xA;&#xD;&#xA;A#2,F3&#xD;&#xA;260&#xD;&#xA;A#2,F3&#xD;&#xA;130&#xD;&#xA;A#2,F3&#xD;&#xA;130&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;&#xD;&#xA;G#2,D#3&#xD;&#xA;400&#xD;&#xA;G#2,D#3&#xD;&#xA;130&#xD;&#xA;G#2,D#3&#xD;&#xA;340&#xD;&#xA;430&#xD;&#xA;&#xD;&#xA;C#3,G#3&#xD;&#xA;260&#xD;&#xA;C#3,G#3&#xD;&#xA;125&#xD;&#xA;C#3,G#3&#xD;&#xA;260&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;F2,C3&#xD;&#xA;380&#xD;&#xA;F2,C3&#xD;&#xA;130&#xD;&#xA;F2,C3&#xD;&#xA;130&#xD;&#xA;360&#xD;&#xA;D3,G3&#xD;&#xA;260&#xD;&#xA;&#xD;&#xA;A#2,F3&#xD;&#xA;260&#xD;&#xA;A#2,F3&#xD;&#xA;130&#xD;&#xA;A#2,F3&#xD;&#xA;130&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;D3,G3&#xD;&#xA;125&#xD;&#xA;&#xD;&#xA;G#2,D#3&#xD;&#xA;400&#xD;&#xA;G#2,D#3&#xD;&#xA;130&#xD;&#xA;G#2,D#3&#xD;&#xA;340&#xD;&#xA;430&#xD;&#xA;&#xD;&#xA;C#3,G#3&#xD;&#xA;250&#xD;&#xA;C#3,G#3&#xD;&#xA;250&#xD;&#xA;C#3,G#3&#xD;&#xA;550&#xD;&#xA;C5&#xD;&#xA;250&#xD;&#xA;F5&#xD;&#xA;550&#xD;&#xA;"
                  FontSize="10" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Visible"
-                 PreviewDragEnter="tSong_DragEnter" PreviewDrop="tSong_Drop" PreviewDragOver="tSong_DragEnter" TextChanged="SongTextChanged"/>
+                 PreviewDragEnter="SongDragEnter" PreviewDrop="SongDrop" PreviewDragOver="SongDragEnter"
+                 TextChanged="SongTextChanged" />
 
-        <Grid Margin="3,7,3,3" Grid.Row="2" Grid.ColumnSpan="2">
-            <Image Stretch="Fill" Source="pack://siteoforigin:,,,/res/fretboard.png"/>
+        <Grid Margin="3,7,3,3" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0">
+            <Image Stretch="Fill" Source="pack://siteoforigin:,,,/res/fretboard.png" />
             <Grid x:Name="FretsGrid" Grid.ColumnSpan="27" Grid.RowSpan="6">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="34*"/>
-                    <RowDefinition Height="33*"/>
-                    <RowDefinition Height="33*"/>
-                    <RowDefinition Height="33*"/>
-                    <RowDefinition Height="33*"/>
-                    <RowDefinition Height="33*"/>
-                    <RowDefinition Height="7*"/>
+                    <RowDefinition Height="34*" />
+                    <RowDefinition Height="33*" />
+                    <RowDefinition Height="33*" />
+                    <RowDefinition Height="33*" />
+                    <RowDefinition Height="33*" />
+                    <RowDefinition Height="33*" />
+                    <RowDefinition Height="7*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="31*"/>
-                    <ColumnDefinition Width="63*"/>
-                    <ColumnDefinition Width="82*"/>
-                    <ColumnDefinition Width="80*"/>
-                    <ColumnDefinition Width="73*"/>
-                    <ColumnDefinition Width="70*"/>
-                    <ColumnDefinition Width="68*"/>
-                    <ColumnDefinition Width="65*"/>
-                    <ColumnDefinition Width="54*"/>
-                    <ColumnDefinition Width="58*"/>
-                    <ColumnDefinition Width="53*"/>
-                    <ColumnDefinition Width="51*"/>
-                    <ColumnDefinition Width="46*"/>
-                    <ColumnDefinition Width="46*"/>
-                    <ColumnDefinition Width="40*"/>
-                    <ColumnDefinition Width="37*"/>
-                    <ColumnDefinition Width="36*"/>
-                    <ColumnDefinition Width="36*"/>
-                    <ColumnDefinition Width="33*"/>
-                    <ColumnDefinition Width="30*"/>
-                    <ColumnDefinition Width="32*"/>
-                    <ColumnDefinition Width="27*"/>
-                    <ColumnDefinition Width="26*"/>
-                    <ColumnDefinition Width="25*"/>
-                    <ColumnDefinition Width="27*"/>
-                    <ColumnDefinition Width="24*"/>
-                    <ColumnDefinition Width="0*"/>
+                    <ColumnDefinition Width="31*" />
+                    <ColumnDefinition Width="63*" />
+                    <ColumnDefinition Width="82*" />
+                    <ColumnDefinition Width="80*" />
+                    <ColumnDefinition Width="73*" />
+                    <ColumnDefinition Width="70*" />
+                    <ColumnDefinition Width="68*" />
+                    <ColumnDefinition Width="65*" />
+                    <ColumnDefinition Width="54*" />
+                    <ColumnDefinition Width="58*" />
+                    <ColumnDefinition Width="53*" />
+                    <ColumnDefinition Width="51*" />
+                    <ColumnDefinition Width="46*" />
+                    <ColumnDefinition Width="46*" />
+                    <ColumnDefinition Width="40*" />
+                    <ColumnDefinition Width="37*" />
+                    <ColumnDefinition Width="36*" />
+                    <ColumnDefinition Width="36*" />
+                    <ColumnDefinition Width="33*" />
+                    <ColumnDefinition Width="30*" />
+                    <ColumnDefinition Width="32*" />
+                    <ColumnDefinition Width="27*" />
+                    <ColumnDefinition Width="26*" />
+                    <ColumnDefinition Width="25*" />
+                    <ColumnDefinition Width="27*" />
+                    <ColumnDefinition Width="24*" />
+                    <ColumnDefinition Width="0*" />
                 </Grid.ColumnDefinitions>
             </Grid>
         </Grid>
