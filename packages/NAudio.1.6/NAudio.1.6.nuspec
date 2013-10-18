@@ -3,16 +3,12 @@
   <metadata>
     <id>NAudio</id>
     <version>1.6</version>
-    <title>NAudio</title>
     <authors>Mark Heath</authors>
     <owners>Mark Heath</owners>
     <licenseUrl>http://naudio.codeplex.com/license</licenseUrl>
     <projectUrl>http://naudio.codeplex.com/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>NAudio, an audio library for .NET</description>
-    <releaseNotes />
-    <copyright />
-    <language />
     <tags>C# .NET audio sound</tags>
   </metadata>
 </package>

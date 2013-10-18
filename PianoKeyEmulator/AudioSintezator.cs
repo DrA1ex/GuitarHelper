@@ -277,23 +277,25 @@ namespace PianoKeyEmulator
             Gunshot
         }
 
-        private readonly MidiOut midiOut = new MidiOut(0);
-        private readonly List<int> playingTones = new List<int>();
+        private const int Chanel = 1;
+
+        private readonly MidiOut _midiOut = new MidiOut(0);
+        private readonly List<int> _playingTones = new List<int>();
 
         public void Dispose()
         {
-            midiOut.Close();
-            midiOut.Dispose();
+            _midiOut.Close();
+            _midiOut.Dispose();
         }
 
         public int PlayTone(byte octave, Tones tone, int strength = 127)
         {
             int note = 12 + octave*12 + (int) tone; // 12 полутонов в октаве, начинаем считать с 0-й октавы (есть еще и -1-ая)
 
-            if (!playingTones.Contains(note))
+            if (!_playingTones.Contains(note))
             {
-                midiOut.Send(MidiMessage.StartNote(note, strength, 0).RawData); // воспроизводим ноту с макс. силой нажатия на канале 0
-                playingTones.Add(note);
+                _midiOut.Send(MidiMessage.StartNote(note, strength, Chanel).RawData); // воспроизводим ноту на канале 0
+                _playingTones.Add(note);
             }
 
             return note;
@@ -301,10 +303,10 @@ namespace PianoKeyEmulator
 
         public void StopPlaying(int id)
         {
-            if (playingTones.Contains(id))
+            if (_playingTones.Contains(id))
             {
-                midiOut.Send(MidiMessage.StopNote(id, 0, 0).RawData);
-                playingTones.Remove(id);
+                _midiOut.Send(MidiMessage.StopNote(id, 0, Chanel).RawData);
+                _playingTones.Remove(id);
             }
         }
 
@@ -315,22 +317,22 @@ namespace PianoKeyEmulator
 
         public void StopAll()
         {
-            while (playingTones.Count > 0)
+            while (_playingTones.Count > 0)
             {
-                StopPlaying(playingTones.First());
+                StopPlaying(_playingTones.First());
             }
 
-            playingTones.Clear();
+            _playingTones.Clear();
         }
 
         public void SetInstrument(Instruments instrument)
         {
-            midiOut.Send(MidiMessage.ChangePatch((int) instrument, 0).RawData);
+            _midiOut.Send(MidiMessage.ChangePatch((int) instrument, Chanel).RawData);
         }
 
-        public bool isNotePlayed(Note note)
+        public bool IsNotePlayed(Note note)
         {
-            return playingTones.Contains(note.Id);
+            return _playingTones.Contains(note.Id);
         }
     }
 }

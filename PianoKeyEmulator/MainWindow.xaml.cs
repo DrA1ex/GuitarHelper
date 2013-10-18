@@ -552,6 +552,7 @@ namespace PianoKeyEmulator
             if (MidiDevice != null)
             {
                 MidiDevice.Close();
+                MidiDevice.Dispose();
             }
 
             MidiDevice = new MidiIn(inputIndex);
